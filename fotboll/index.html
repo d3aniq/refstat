@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>DʒaniQ RefStat – Fotboll</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- INTER FONT -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body { font-family: 'Inter', sans-serif; }
+
+  .dq-header {
+    background: linear-gradient(90deg, #1A1A1A, #4F46E5);
+    color: white;
+    padding: 32px 24px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+
+  .dq-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+
+  .dq-select, .dq-input {
+    border-radius: 10px;
+    padding: 8px 12px;
+    border: 1px solid #D1D5DB;
+  }
+
+  .dq-button {
+    background: #4F46E5;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.15s;
+  }
+  .dq-button:hover {
+    background: #4338CA;
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+</style>
+</head>
+
+<body class="bg-[#F5F6FA] p-6">
+
+<!-- HEADER -->
+<div class="dq-header">
+  <h1 class="text-4xl font-bold flex items-center gap-3">
+    <!-- <span style="font-size:42px;">📊</span>  -->
+    DʒaniQ RefStat – Fotboll
+  </h1>
+  <p class="text-lg text-indigo-200 mt-2">Nationell fotbolldomarstatistik</p>
+</div>
+
+<!-- LOADING BAR -->
+<div id="loadingBar" class="hidden mb-6">
+  <div class="w-full bg-gray-300 rounded h-3">
+    <div id="loadingProgress" class="bg-indigo-600 h-3 rounded w-0 transition-all"></div>
+  </div>
+  <p id="loadingText" class="text-sm text-gray-600 mt-1">Hämtar data…</p>
+</div>
+
+<!-- FILTERS -->
+<div class="dq-card mb-6">
+  <div class="flex items-end gap-6 flex-wrap">
+
+    <div>
+      <label class="block font-semibold mb-1">Distrikt:</label>
+      <select id="districtSelect" class="dq-select w-48">
+        <option value="7">Göteborg</option>
+        <option value="1">Nationellt</option>
+        <option value="2">Blekinge</option>
+        <option value="28">Bohuslän-Dalsland</option>
+        <option value="4">Dalarna</option>
+        <option value="6">Gestrikland</option>
+        <option value="5">Gotland</option>
+        <option value="8">Halland</option>
+        <option value="9">Hälsingland</option>
+        <option value="10">Jämtland-Härjedalen</option>
+        <option value="11">Medelpad</option>
+        <option value="12">Norrbotten</option>
+        <option value="14">Skåne</option>
+        <option value="15">Småland</option>
+        <option value="16">Stockholm</option>
+        <option value="17">Södermanland</option>
+        <option value="18">Uppland</option>
+        <option value="19">Värmland</option>
+        <option value="20">Västerbotten</option>
+        <option value="21">Västergötland</option>
+        <option value="22">Västmanland</option>
+        <option value="23">Ångermanland</option>
+        <option value="13">Örebro Län</option>
+        <option value="24">Östergötland</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block font-semibold mb-1">Från:</label>
+      <input id="dateFrom" type="date" class="dq-input">
+    </div>
+
+    <div>
+      <label class="block font-semibold mb-1">Till:</label>
+      <input id="dateTo" type="date" class="dq-input">
+    </div>
+
+    <button onclick="loadInterval()" class="dq-button">Ladda</button>
+  </div>
+</div>
+
+<!-- OUTPUT: MEST AKTIVA DOMARE -->
+<div id="rankingOutput" class="mb-6"></div>
+
+<!-- SERIES & REF SELECTORS (FLYTTAD HIT) -->
+<div class="dq-card mb-8">
+  <!-- <h2 class="text-xl font-bold mb-3">📂 Fördjupa Statistik</h2> -->
+  <p class="text-gray-500 mb-4 text-sm">
+    Välj serie eller domare för att visa detaljerad statistik.
+  </p>
+
+  <div class="flex gap-8 flex-wrap">
+    <div>
+      <label class="block font-semibold mb-1">Serie:</label>
+      <select id="seriesSelect" onchange="renderSeriesStats()" class="dq-select w-64">
+        <option value="">– välj serie –</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block font-semibold mb-1">Domare:</label>
+      <select id="refSelect" onchange="renderRefereeStats()" class="dq-select w-64">
+        <option value="">– välj domare –</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- OUTPUT: SERIE & DOMARE -->
+<div id="seriesOutput" class="mb-6"></div>
+<div id="refOutput"></div>
+
+
+<!-- FOOTER -->
+<p class="text-center text-gray-500 mt-12 mb-4 text-sm">
+  Powered by <b>DʒaniQ</b> • Data Intelligence & AI Analytics
+</p>
+
+
+<script>
+/* samma funktionalitet som din stabila kodversion — INGET ändrat i logiken */
+/* här klistrar jag inte in igen för att undvika scroll-monster */
+/* säg bara "JA ge mig full JS-delen" så får du hela scriptet igen brandat och snyggt indenterat */
+
+</script>
+
+</body>
+</html>
+
+
+
+
+<script>
+// ===================================================================
+//  GLOBAL STATE
+// ===================================================================
+let allMatches = [];
+let allSeries = new Set();
+let allRefs = new Set();
+
+const PROXIES = [
+  p => "https://corsproxy.io/?" + encodeURIComponent(p),
+  p => "https://api.allorigins.win/raw?url=" + encodeURIComponent(p),
+  p => "https://thingproxy.freeboard.io/fetch/" + p
+];
+
+
+// ===================================================================
+//  ROLL MAPPER
+// ===================================================================
+function mapRole(desc) {
+  if (!desc) return "Other";
+  let d = desc.toLowerCase().trim();
+
+  if (d.includes("förstedomare")) return "D1";
+  if (d.includes("andredomare")) return "D2";
+  if (d.includes("tredjedomare")) return "D3";
+  if (d.includes("fjärdedomare")) return "D4";
+
+  if (d.includes("ass. domare 1")) return "AD1";
+  if (d.includes("ass.domare 1")) return "AD1";
+
+  if (d.includes("ass. domare 2")) return "AD2";
+  if (d.includes("ass.domare 2")) return "AD2";
+
+  if (d === "domare") return "HD";
+  return "Other";
+}
+
+
+// ===================================================================
+//  STABIL FETCH (3× per proxy, proxy-rotation)
+// ===================================================================
+async function stableFetch(url) {
+  for (let p = 0; p < PROXIES.length; p++) {
+    for (let i = 0; i < 3; i++) {
+      try {
+        const proxyUrl = PROXIES[p](url);
+
+        const res = await fetch(proxyUrl, {
+          cache: "no-store",
+          headers: { "Accept": "application/json" }
+        });
+
+        if (!res.ok) continue;
+
+        const text = await res.text();
+        if (!text) continue;
+
+        let json;
+        try { json = JSON.parse(text); } catch (e) { continue; }
+
+        if (!json || typeof json !== "object") continue;
+        if (!json.competitions) continue;
+
+        return json;
+
+      } catch (_) {}
+    }
+  }
+  return null;
+}
+
+
+// ===================================================================
+//  FETCH ONE DAY (using stableFetch)
+// ===================================================================
+async function fetchDay(date) {
+  const district = document.getElementById("districtSelect").value;
+  const api =
+    `https://www.gbgfotboll.se/api/matches-today/games/?showReferees=true&associationId=${district}&date=${date}`;
+
+  return await stableFetch(api);
+}
+
+
+// ===================================================================
+//  LOAD FULL INTERVAL
+// ===================================================================
+async function loadInterval() {
+  const from = document.getElementById("dateFrom").value;
+  const to   = document.getElementById("dateTo").value;
+
+  if (!from || !to) return alert("Välj datumintervall!");
+
+  allMatches = [];
+  allSeries.clear();
+  allRefs.clear();
+
+  const loading   = document.getElementById("loadingBar");
+  const progress  = document.getElementById("loadingProgress");
+  const text      = document.getElementById("loadingText");
+
+  loading.classList.remove("hidden");
+  progress.style.width = "0%";
+
+  let current = new Date(from);
+  const end   = new Date(to);
+
+  let totalDays = Math.floor((end - current) / 86400000) + 1;
+  let loadedDays = 0;
+
+  while (current <= end) {
+    const d = current.toISOString().slice(0, 10);
+    text.textContent = `Hämtar ${d}…`;
+
+    const data = await fetchDay(d);
+
+    if (data && data.competitions) {
+      for (const comp of data.competitions) {
+        allSeries.add(comp.name);
+
+        for (const g of comp.games) {
+          if (!g || !g.date) continue;
+
+          allMatches.push({
+            serie: comp.name,
+            date: g.date.slice(0, 10),
+            time: g.date.slice(11, 16),
+            hall: g.location || "",
+            home: g.homeTeam?.name || "",
+            away: g.awayTeam?.name || "",
+            referees: g.referees || []
+          });
+
+          for (const r of g.referees || [])
+            allRefs.add(r.name);
+        }
+      }
+    }
+
+    loadedDays++;
+    progress.style.width = ((loadedDays / totalDays) * 100) + "%";
+
+    current.setDate(current.getDate() + 1);
+  }
+
+  loading.classList.add("hidden");
+
+  populateDropdowns();
+  renderRanking();
+}
+
+
+// ===================================================================
+//  POPULATE DROPDOWNS
+// ===================================================================
+function populateDropdowns() {
+  const s = document.getElementById("seriesSelect");
+  const r = document.getElementById("refSelect");
+
+  s.innerHTML = '<option value="">– välj serie –</option>';
+  r.innerHTML = '<option value="">– välj domare –</option>';
+
+  [...allSeries].sort().forEach(x => s.innerHTML += `<option>${x}</option>`);
+  [...allRefs].sort().forEach(x => r.innerHTML += `<option>${x}</option>`);
+}
+
+
+// ===================================================================
+//  RANKING TABLE
+// ===================================================================
+function renderRanking() {
+  const box = document.getElementById("rankingOutput");
+  if (!allMatches.length) return box.innerHTML = "";
+
+  let stats = {};
+
+  for (const m of allMatches) {
+    const isFutsal = m.serie.toLowerCase().includes("futsal");
+
+    for (const r of m.referees) {
+      const role = mapRole(r.roleDescription);
+      if (!stats[r.name]) {
+        stats[r.name] = { total: 0, HD:0,AD1:0,AD2:0,D4:0, D1:0,D2:0,D3:0 };
+      }
+
+      stats[r.name].total++;
+
+      if (!isFutsal && ["HD","AD1","AD2","D4"].includes(role))
+        stats[r.name][role]++;
+
+      if (isFutsal && ["D1","D2","D3"].includes(role))
+        stats[r.name][role]++;
+    }
+  }
+
+  let ranking = Object.entries(stats)
+    .sort((a,b) => b[1].total - a[1].total);
+
+  let html = `
+  <div class="bg-white shadow p-4 rounded">
+    <h2 class="text-xl font-bold mb-4">🏆 Mest aktiva domare</h2>
+
+    <div class="max-h-[500px] overflow-y-scroll border rounded">
+      <table class="w-full text-sm border-collapse">
+
+        <tr class="bg-gray-100 font-semibold sticky top-0 z-20">
+          <th class="p-2 bg-gray-100"></th>
+          <th class="p-2 bg-gray-100"></th>
+          <th class="p-2 bg-gray-100"></th>
+          <th class="p-2 text-center bg-lime-200" colspan="4">Fotboll</th>
+          <th class="p-2 text-center bg-cyan-200" colspan="3">Futsal</th>
+        </tr>
+
+        <tr class="bg-gray-200 font-semibold sticky top-7 z-10">
+          <th class="p-2">#</th>
+          <th class="p-2">Domare</th>
+          <th class="p-2">Totalt</th>
+
+          <th class="p-2 bg-lime-300">HD</th>
+          <th class="p-2 bg-lime-300">AD1</th>
+          <th class="p-2 bg-lime-300">AD2</th>
+          <th class="p-2 bg-lime-300">D4</th>
+
+          <th class="p-2 bg-cyan-300">D1</th>
+          <th class="p-2 bg-cyan-300">D2</th>
+          <th class="p-2 bg-cyan-300">D3</th>
+        </tr>
+  `;
+
+  let rank = 1;
+
+  for (const [name, s] of ranking) {
+    html += `
+    <tr class="border-b">
+      <td class="p-2">${rank++}</td>
+      <td class="p-2">${name}</td>
+      <td class="p-2 font-bold">${s.total}</td>
+
+      <td class="p-2 bg-lime-100">${s.HD}</td>
+      <td class="p-2 bg-lime-100">${s.AD1}</td>
+      <td class="p-2 bg-lime-100">${s.AD2}</td>
+      <td class="p-2 bg-lime-100">${s.D4}</td>
+
+      <td class="p-2 bg-cyan-100">${s.D1}</td>
+      <td class="p-2 bg-cyan-100">${s.D2}</td>
+      <td class="p-2 bg-cyan-100">${s.D3}</td>
+    </tr>
+    `;
+  }
+
+  html += `
+      </table>
+    </div>
+  </div>`;
+
+  box.innerHTML = html;
+}
+
+
+// ===================================================================
+//  SERIE STATISTIK
+// ===================================================================
+function renderSeriesStats() {
+  const serie = document.getElementById("seriesSelect").value;
+  const box = document.getElementById("seriesOutput");
+  box.innerHTML = "";
+  if (!serie) return;
+
+  const matches = allMatches.filter(m => m.serie === serie);
+
+  let stats = {};
+
+  for (const m of matches) {
+    for (const r of m.referees) {
+      const role = mapRole(r.roleDescription);
+
+      if (!stats[r.name])
+        stats[r.name] =
+          {HD:0,AD1:0,AD2:0,D4:0,D1:0,D2:0,D3:0,total:0};
+
+      stats[r.name][role]++;
+      stats[r.name].total++;
+    }
+  }
+
+  let html = `
+  <div class="bg-white shadow p-4 rounded">
+    <h2 class="text-xl font-bold mb-4">📊 Statistik – ${serie}</h2>
+    <table class="w-full text-sm">
+      <tr class="bg-gray-200 font-semibold">
+        <th class="p-2 text-left">Domare</th>
+        <th class="p-2">HD</th>
+        <th class="p-2">AD1</th>
+        <th class="p-2">AD2</th>
+        <th class="p-2">D4</th>
+        <th class="p-2">D1</th>
+        <th class="p-2">D2</th>
+        <th class="p-2">D3</th>
+        <th class="p-2">Totalt</th>
+      </tr>
+  `;
+
+  for (const [name, s] of Object.entries(stats)) {
+    html += `
+      <tr class="border-b">
+        <td class="p-2">${name}</td>
+        <td class="p-2">${s.HD}</td>
+        <td class="p-2">${s.AD1}</td>
+        <td class="p-2">${s.AD2}</td>
+        <td class="p-2">${s.D4}</td>
+        <td class="p-2">${s.D1}</td>
+        <td class="p-2">${s.D2}</td>
+        <td class="p-2">${s.D3}</td>
+        <td class="p-2 font-bold">${s.total}</td>
+      </tr>
+    `;
+  }
+
+  html += "</table></div>";
+  box.innerHTML = html;
+}
+
+
+// ===================================================================
+//  DOMARE STATISTIK
+// ===================================================================
+function renderRefereeStats() {
+  const name = document.getElementById("refSelect").value;
+  const box = document.getElementById("refOutput");
+  box.innerHTML = "";
+  if (!name) return;
+
+  const matches = allMatches
+    .filter(m => m.referees.some(r => r.name === name))
+    .sort((a,b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+  let s = {HD:0,AD1:0,AD2:0,D4:0,D1:0,D2:0,D3:0,total:0};
+  let colleagues = {};
+
+  for (const m of matches) {
+    for (const r of m.referees) {
+      const role = mapRole(r.roleDescription);
+
+      if (r.name === name) {
+        s[role]++; s.total++;
+      } else {
+        colleagues[r.name] = (colleagues[r.name] || 0) + 1;
+      }
+    }
+  }
+
+  let html = `
+    <div class="bg-white shadow p-4 rounded">
+      <h2 class="text-2xl font-bold mb-4">${name}</h2>
+
+      <p class="mb-4 text-sm">
+        HD: ${s.HD} &nbsp;
+        AD1: ${s.AD1} &nbsp;
+        AD2: ${s.AD2} &nbsp;
+        D4: ${s.D4} &nbsp;
+        D1: ${s.D1} &nbsp;
+        D2: ${s.D2} &nbsp;
+        D3: ${s.D3} &nbsp;
+        <b>Totalt: ${s.total}</b>
+      </p>
+
+      <h3 class="text-xl font-bold mt-4 mb-2">📅 Matcher</h3>
+  `;
+
+  for (const m of matches) {
+    const refereeLine = m.referees
+      .map(r => {
+        const role = mapRole(r.roleDescription);
+        return (r.name === name)
+          ? `<b>${r.name} (${role})</b>`
+          : `${r.name} (${role})`;
+      })
+      .join(", ");
+
+    html += `
+      <div class="border-b py-3 text-sm leading-tight">
+        <div>${m.date} ${m.time}, ${m.hall}</div>
+        <div>${m.serie}, ${m.home} – ${m.away}</div>
+        <div class="text-gray-800">${refereeLine}</div>
+      </div>
+    `;
+  }
+
+  html += `
+      <h3 class="text-xl font-bold mt-6 mb-2">👥 Domarkollegor</h3>
+      <table class="w-full text-sm mb-6">
+        <tr class="bg-gray-200 font-semibold">
+          <th class="p-2 text-left">Kollega</th>
+          <th class="p-2 text-left">Matcher ihop</th>
+        </tr>
+  `;
+
+  for (const [c, count] of Object.entries(colleagues)) {
+    html += `<tr><td class="p-2">${c}</td><td class="p-2">${count}</td></tr>`;
+  }
+
+  html += "</table></div>";
+  box.innerHTML = html;
+}
+
+</script>
+
+</body>
+</html>
