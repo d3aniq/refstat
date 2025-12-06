@@ -1,47 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="sv">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DʒaniQ RefStat</title>
-<script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DʒaniQ RefStat – Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    iframe { width: 100%; height: calc(100vh - 140px); border: none; }
+  </style>
 </head>
 
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-<!-- HERO -->
-<div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-12 text-center shadow-xl">
-  <h1 class="text-4xl font-extrabold mb-3">DʒaniQ RefStat</h1>
-  <p class="text-lg opacity-90">Samlad domarstatistik</p>
-</div>
+  <!-- Header -->
+  <header class="bg-white shadow-md px-4 py-3 flex items-center justify-between">
+    
+    <!-- Logo -->
+    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">
+      DʒaniQ <span class="text-purple-600">RefStat</span>
+    </h1>
 
-<!-- KNAPPAR -->
-<div class="max-w-xl mx-auto mt-12 px-6">
+    <!-- Sport-knappar -->
+    <div class="flex gap-2">
+      <button id="btnFotboll"
+              class="px-3 py-2 rounded-lg font-semibold text-gray-700 bg-gray-200 active:scale-95 transition">
+        ⚽ Fotboll
+      </button>
 
-  <a href="/refstat/fotboll" 
-     class="block bg-white text-indigo-700 font-bold p-6 rounded-2xl text-2xl text-center 
-            shadow-lg hover:shadow-2xl transition mb-6">
-    ⚽ Fotboll & Futsal
-  </a>
+      <button id="btnInnebandy"
+              class="px-3 py-2 rounded-lg font-semibold text-gray-700 bg-gray-200 active:scale-95 transition">
+        🏑 Innebandy
+      </button>
+    </div>
+  </header>
 
-  <a href="/refstat/innebandy" 
-     class="block bg-white text-indigo-700 font-bold p-6 rounded-2xl text-2xl text-center 
-            shadow-lg hover:shadow-2xl transition">
-    🏑 Innebandy
-  </a>
+  <!-- iFrame Content -->
+  <iframe id="refFrame" src=""></iframe>
 
-  <p class="text-center mt-6 text-gray-600 text-sm">
-    Från öppna offentliga datakällor
-    <br>Kontakt <a href="mailto:refstat@dzanic.se">refstat@dzanic.se</a>
-  </p>
-</div>
+  <script>
+    const iframe = document.getElementById("refFrame");
+    const btnFotboll = document.getElementById("btnFotboll");
+    const btnInnebandy = document.getElementById("btnInnebandy");
 
-<!-- MOBIL-MENY -->
-<nav class="fixed bottom-0 w-full bg-white border-t shadow-md flex justify-around py-3 md:hidden">
-  <a href="/refstat" class="text-2xl">🏠</a>
-  <a href="/refstat/fotboll" class="text-2xl">⚽</a>
-  <a href="/refstat/innebandy" class="text-2xl">🏑</a>
-</nav>
+    const URLS = {
+      fotboll: "https://d3aniq.github.io/fotboll/",
+      innebandy: "https://d3aniq.github.io/innebandy/"
+    };
+
+    function setActive(sport) {
+      // Aktiva knappar
+      if (sport === "fotboll") {
+        btnFotboll.classList.add("bg-purple-600", "text-white");
+        btnFotboll.classList.remove("bg-gray-200", "text-gray-700");
+
+        btnInnebandy.classList.add("bg-gray-200", "text-gray-700");
+        btnInnebandy.classList.remove("bg-purple-600", "text-white");
+      } else {
+        btnInnebandy.classList.add("bg-purple-600", "text-white");
+        btnInnebandy.classList.remove("bg-gray-200", "text-gray-700");
+
+        btnFotboll.classList.add("bg-gray-200", "text-gray-700");
+        btnFotboll.classList.remove("bg-purple-600", "text-white");
+      }
+    }
+
+    function loadSport(sport) {
+      iframe.src = URLS[sport];
+      localStorage.setItem("refstat_sport", sport);
+      setActive(sport);
+    }
+
+    // Knapp-events
+    btnFotboll.onclick = () => loadSport("fotboll");
+    btnInnebandy.onclick = () => loadSport("innebandy");
+
+    // Ladda senaste val
+    const saved = localStorage.getItem("refstat_sport");
+    if (saved && URLS[saved]) {
+      loadSport(saved);
+    } else {
+      // Standard – Fotboll
+      loadSport("fotboll");
+    }
+  </script>
 
 </body>
 </html>
