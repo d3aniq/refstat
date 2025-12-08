@@ -1,90 +1,119 @@
 <!doctype html>
 <html lang="sv">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DʒaniQ RefStat – Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DʒaniQ RefStat</title>
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    iframe { width: 100%; height: calc(100vh - 140px); border: none; }
-  </style>
+<style>
+  body { 
+    font-family: Inter, system-ui, sans-serif; 
+    background: #f2f3f7;
+  }
+
+  .active-tab {
+    @apply text-purple-600 font-semibold;
+  }
+
+  /* Fade animation */
+  .fade {
+    animation: fadein .25s ease;
+  }
+  @keyframes fadein {
+    from { opacity:0; transform: translateY(4px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+</style>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
-  <!-- Header -->
-  <header class="bg-white shadow-md px-4 py-3 flex items-center justify-between">
-    
-    <!-- Logo -->
-    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">
-      DʒaniQ <span class="text-purple-600">RefStat</span>
-    </h1>
+<!-- TOP BAR -->
+<header class="bg-white shadow-sm py-4 px-5 sticky top-0 z-40">
+  <h1 class="text-xl font-bold text-center">DʒaniQ RefStat</h1>
+</header>
 
-    <!-- Sport-knappar -->
-    <div class="flex gap-2">
-      <button id="btnFotboll"
-              class="px-3 py-2 rounded-lg font-semibold text-gray-700 bg-gray-200 active:scale-95 transition">
-        ⚽ Fotboll
-      </button>
+<!-- MAIN CONTENT -->
+<main id="pageContent" class="flex-1 p-4 pb-20">
 
-      <button id="btnInnebandy"
-              class="px-3 py-2 rounded-lg font-semibold text-gray-700 bg-gray-200 active:scale-95 transition">
-        🏑 Innebandy
-      </button>
+  <!-- Fotboll -->
+  <div id="viewFotboll" class="fade">
+    <div class="bg-white rounded-2xl shadow p-5">
+<!--       <h2 class="text-lg font-semibold mb-1">⚽ Fotboll</h2>
+      <p class="text-gray-600 mb-3">Statistik, serier och domarinfo.</p> -->
+
+      <!-- FUTURE: iFrame -->
+      <iframe src="https://d3aniq.github.io/refstat/fotboll/" class="w-full h-[75vh] rounded-lg"></iframe>
     </div>
-  </header>
+  </div>
 
-  <!-- iFrame Content -->
-  <iframe id="refFrame" src=""></iframe>
+  <!-- Innebandy -->
+  <div id="viewInnebandy" class="hidden fade">
+    <div class="bg-white rounded-2xl shadow p-5">
+      <!-- <h2 class="text-lg font-semibold mb-1">🏑 Innebandy</h2>
+      <p class="text-gray-600 mb-3">Statistik & domarinfo för innebandy.</p> -->
 
-  <script>
-    const iframe = document.getElementById("refFrame");
-    const btnFotboll = document.getElementById("btnFotboll");
-    const btnInnebandy = document.getElementById("btnInnebandy");
+      <!-- FUTURE: iFrame -->
+      <iframe src="https://d3aniq.github.io/refstat/innebandy/" class="w-full h-[75vh] rounded-lg"></iframe>
+    </div>
+  </div>
 
-    const URLS = {
-      fotboll: "https://d3aniq.github.io/refstat/fotboll/",
-      innebandy: "https://d3aniq.github.io/refstat/innebandy/"
-    };
+</main>
 
-    function setActive(sport) {
-      // Aktiva knappar
-      if (sport === "fotboll") {
-        btnFotboll.classList.add("bg-purple-600", "text-white");
-        btnFotboll.classList.remove("bg-gray-200", "text-gray-700");
+<!-- BOTTOM NAV (APP STYLE) -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.08)] py-3 z-50">
+  <div class="max-w-md mx-auto flex justify-around">
 
-        btnInnebandy.classList.add("bg-gray-200", "text-gray-700");
-        btnInnebandy.classList.remove("bg-purple-600", "text-white");
-      } else {
-        btnInnebandy.classList.add("bg-purple-600", "text-white");
-        btnInnebandy.classList.remove("bg-gray-200", "text-gray-700");
+    <button id="navFotboll" class="flex flex-col items-center text-gray-500">
+      <span class="text-2xl">⚽</span>
+      <span class="text-xs mt-1">Fotboll</span>
+    </button>
 
-        btnFotboll.classList.add("bg-gray-200", "text-gray-700");
-        btnFotboll.classList.remove("bg-purple-600", "text-white");
-      }
-    }
+    <button id="navInnebandy" class="flex flex-col items-center text-gray-500">
+      <span class="text-2xl">🏑</span>
+      <span class="text-xs mt-1">Innebandy</span>
+    </button>
 
-    function loadSport(sport) {
-      iframe.src = URLS[sport];
-      localStorage.setItem("refstat_sport", sport);
-      setActive(sport);
-    }
+  </div>
+</nav>
 
-    // Knapp-events
-    btnFotboll.onclick = () => loadSport("fotboll");
-    btnInnebandy.onclick = () => loadSport("innebandy");
+<script>
+  const navFotboll = document.getElementById("navFotboll");
+  const navInnebandy = document.getElementById("navInnebandy");
 
-    // Ladda senaste val
-    const saved = localStorage.getItem("refstat_sport");
-    if (saved && URLS[saved]) {
-      loadSport(saved);
+  const viewFotboll = document.getElementById("viewFotboll");
+  const viewInnebandy = document.getElementById("viewInnebandy");
+
+  // Load last state
+  let active = sessionStorage.getItem("activeTab") || "fotboll";
+
+  function show(tab) {
+    active = tab;
+    sessionStorage.setItem("activeTab", tab);
+
+    if (tab === "fotboll") {
+      viewFotboll.classList.remove("hidden");
+      viewInnebandy.classList.add("hidden");
+
+      navFotboll.classList.add("active-tab");
+      navInnebandy.classList.remove("active-tab");
     } else {
-      // Standard – Fotboll
-      loadSport("fotboll");
+      viewInnebandy.classList.remove("hidden");
+      viewFotboll.classList.add("hidden");
+
+      navInnebandy.classList.add("active-tab");
+      navFotboll.classList.remove("active-tab");
     }
-  </script>
+  }
+
+  // Initial load
+  show(active);
+
+  // Navigation actions
+  navFotboll.onclick = () => show("fotboll");
+  navInnebandy.onclick = () => show("innebandy");
+</script>
 
 </body>
 </html>
