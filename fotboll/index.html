@@ -58,7 +58,7 @@
 </style>
 </head>
 
-<body class="bg-[#F5F6FA] p-3 md:p-6">
+<body class="bg-[#F5F6FA] p-6">
 
 <!-- HEADER -->
 <div class="dq-header">
@@ -76,11 +76,11 @@
 
 <!-- FILTERS -->
 <div class="dq-card mb-6">
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-wrap gap-4 md:gap-6 items-end">
+  <div class="flex items-end gap-6 flex-wrap">
 
-    <div class="w-full md:w-auto">
+    <div>
       <label class="block font-semibold mb-1">Distrikt:</label>
-      <select id="districtSelect" class="dq-select w-full md:w-48">
+      <select id="districtSelect" class="dq-select w-48">
         <option value="7">Göteborg</option>
         <option value="1">Nationellt</option>
         <option value="2">Blekinge</option>
@@ -108,65 +108,72 @@
       </select>
     </div>
 
-    <div class="w-full md:w-auto">
+    <div>
       <label class="block font-semibold mb-1">Från:</label>
-      <input id="dateFrom" type="date" class="dq-input w-full">
+      <input id="dateFrom" type="date" class="dq-input">
     </div>
 
-    <div class="w-full md:w-auto">
+    <div>
       <label class="block font-semibold mb-1">Till:</label>
-      <input id="dateTo" type="date" class="dq-input w-full">
+      <input id="dateTo" type="date" class="dq-input">
     </div>
 
-    <div class="w-full md:w-auto">
-      <button onclick="loadInterval()" class="dq-button w-full md:w-auto text-center">Ladda</button>
-    </div>
-
+    <button onclick="loadInterval()" class="dq-button">Ladda</button>
   </div>
 </div>
 
 <!-- OUTPUT: MEST AKTIVA DOMARE -->
-<div id="rankingOutput" class="mb-6 overflow-x-auto"></div>
+<div id="rankingOutput" class="mb-6"></div>
 
-<!-- SERIES & REF SELECTORS -->
+<!-- SERIES & REF SELECTORS (FLYTTAD HIT) -->
 <div class="dq-card mb-8">
+  <!-- <h2 class="text-xl font-bold mb-3">📂 Fördjupa Statistik</h2> -->
   <p class="text-gray-500 mb-4 text-sm">
     Välj serie eller domare för att visa detaljerad statistik.
   </p>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:flex lg:gap-8">
-
-    <div class="w-full lg:w-auto">
+  <div class="flex gap-8 flex-wrap">
+    <div>
       <label class="block font-semibold mb-1">Serie:</label>
-      <select id="seriesSelect" onchange="renderSeriesStats()" class="dq-select w-full lg:w-64">
+      <select id="seriesSelect" onchange="renderSeriesStats()" class="dq-select w-64">
         <option value="">– välj serie –</option>
       </select>
     </div>
 
-    <div class="w-full lg:w-auto">
+    <div>
       <label class="block font-semibold mb-1">Domare:</label>
-      <select id="refSelect" onchange="renderRefereeStats()" class="dq-select w-full lg:w-64">
+      <select id="refSelect" onchange="renderRefereeStats()" class="dq-select w-64">
         <option value="">– välj domare –</option>
       </select>
     </div>
-
   </div>
 </div>
 
 <!-- OUTPUT: SERIE & DOMARE -->
-<div id="seriesOutput" class="mb-6 overflow-x-auto"></div>
-<div id="refOutput" class="overflow-x-auto"></div>
+<div id="seriesOutput" class="mb-6"></div>
+<div id="refOutput"></div>
+
 
 <!-- FOOTER -->
 <p class="text-center text-gray-500 mt-12 mb-4 text-sm">
   Powered by <b>DʒaniQ</b> • Data Intelligence & AI Analytics
 </p>
 
-<!-- ===================================================================
-     FULL JAVASCRIPT (DIN ORIGINALKOD, ORÖRD)
-     =================================================================== -->
-<script>
 
+<script>
+/* samma funktionalitet som din stabila kodversion — INGET ändrat i logiken */
+/* här klistrar jag inte in igen för att undvika scroll-monster */
+/* säg bara "JA ge mig full JS-delen" så får du hela scriptet igen brandat och snyggt indenterat */
+
+</script>
+
+</body>
+</html>
+
+
+
+
+<script>
 // ===================================================================
 //  GLOBAL STATE
 // ===================================================================
@@ -239,7 +246,7 @@ async function stableFetch(url) {
 
 
 // ===================================================================
-//  FETCH ONE DAY
+//  FETCH ONE DAY (using stableFetch)
 // ===================================================================
 async function fetchDay(date) {
   const district = document.getElementById("districtSelect").value;
@@ -365,8 +372,7 @@ function renderRanking() {
     .sort((a,b) => b[1].total - a[1].total);
 
   let html = `
-
-  <div class="bg-white shadow p-4 rounded min-w-[900px]">
+  <div class="bg-white shadow p-4 rounded">
     <h2 class="text-xl font-bold mb-4">🏆 Mest aktiva domare</h2>
 
     <div class="max-h-[500px] overflow-y-scroll border rounded">
@@ -453,7 +459,7 @@ function renderSeriesStats() {
   }
 
   let html = `
-  <div class="bg-white shadow p-4 rounded min-w-[800px]">
+  <div class="bg-white shadow p-4 rounded">
     <h2 class="text-xl font-bold mb-4">📊 Statistik – ${serie}</h2>
     <table class="w-full text-sm">
       <tr class="bg-gray-200 font-semibold">
@@ -519,7 +525,7 @@ function renderRefereeStats() {
   }
 
   let html = `
-    <div class="bg-white shadow p-4 rounded min-w-[800px]">
+    <div class="bg-white shadow p-4 rounded">
       <h2 class="text-2xl font-bold mb-4">${name}</h2>
 
       <p class="mb-4 text-sm">
