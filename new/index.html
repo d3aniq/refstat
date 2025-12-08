@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>RefStat – Test</title>
+
+  <!-- Viktigt: korrekt embed länken -->
+  <script src="https://mfpembedcdnweu.azureedge.net/mfpembedcontweu/Embed.js"></script>
+
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    pre { background: #f2f2f2; padding: 10px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+
+<h1>RefStat – Test</h1>
+
+<!-- VIKTIGT: lägg ett giltigt matchnummer här -->
+<div id="matchWidget"
+     class="mfp-embed"
+     data-type="match"
+     data-id="1648952">
+</div>
+
+<h2>Extraherad matchdata</h2>
+<pre id="info">Laddar...</pre>
+
+<script>
+function extractData() {
+  const widget = document.querySelector("#matchWidget");
+
+  // Om widgeten inte fått någon text än
+  if (!widget || widget.innerText.trim().length < 10) return;
+
+  const info = {};
+
+  info.raw = widget.innerText;
+
+  document.getElementById("info").innerText =
+    JSON.stringify(info, null, 2);
+}
+
+const observer = new MutationObserver(extractData);
+observer.observe(document.body, { childList: true, subtree: true });
+
+setTimeout(extractData, 2000);
+</script>
+
+</body>
+</html>
