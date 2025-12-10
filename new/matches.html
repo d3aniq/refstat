@@ -1,51 +1,26 @@
-<!DOCTYPE html>
-<html lang="sv">
-<head>
-<meta charset="UTF-8">
-<title>RefStat Lite – Matcher</title>
-
-<!-- Innebandyförbundets officiella embed-script -->
 <script src="https://mfpembedcdnweu.azureedge.net/mfpembedcontweu/Embed.js"></script>
-
-<style>
-  body { font-family: Arial, sans-serif; padding: 20px; }
-  label { font-weight: bold; }
-</style>
-</head>
-
-<body>
-
-<h1>Matcher – valt datum</h1>
-
-<label>Välj datum:</label>
-<input type="date" id="datePicker" value="2025-12-09" />
-
-<button onclick="loadMatches()">Visa matcher</button>
-
-<hr>
-
-<div id="matchContainer"></div>
 
 <script>
 function loadMatches() {
     const date = document.getElementById("datePicker").value;
 
-    document.getElementById("matchContainer").innerHTML = `
-        <div class="mfp-embed"
-             data-type="matches"
-             data-date="${date}">
-        </div>
-    `;
+    const container = document.getElementById("matchContainer");
+    container.innerHTML = "";
 
-    // Viktigt: ladda om widgeten
-    if (window.MfpEmbed && MfpEmbed.load) {
-        MfpEmbed.load();
-    }
+    const div = document.createElement("div");
+    div.className = "mfp-embed";
+    div.setAttribute("data-type", "matches");
+    div.setAttribute("data-date", date);
+
+    container.appendChild(div);
+
+    // IMPORTANT: wait a bit before loading
+    setTimeout(() => {
+        if (window.MfpEmbed && MfpEmbed.load) {
+            MfpEmbed.load();
+        } else {
+            console.error("MfpEmbed not ready");
+        }
+    }, 200);
 }
-  
-// Kör vid start
-loadMatches();
 </script>
-
-</body>
-</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <title>RefStat Lite – Matcher för datum</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .match { padding: 10px; margin: 10px 0; background: #f5f5f5; border-radius: 6px; }
+  </style>
+</head>
+<body>
+
+<h1>RefStat Lite – Matcher för datum</h1>
+
+<label>Välj datum:</label>
+<input type="date" id="dateInput">
+<button onclick="loadMatches()">Visa matcher</button>
+
+<div id="output">Välj ett datum…</div>
+
+<script>
+async function loadMatches() {
+    const date = document.getElementById("dateInput").value;
+    if (!date) return alert("Välj ett datum först.");
+
+    document.getElementById("output").innerHTML = "Laddar…";
+
+    // 1) HÄMTA TOKEN
+    const startkit = await fetch("https://api.innebandy.se/StatsAppApi/api/startkit")
+        .then(r => r.json());
+
+    const token = startkit.accessToken;
+
+    // 2) HÄMTA MATCHER
+    const url = `https://api.innebandy.se/v2/api/federations/21/${date}/matches`;
+
+    const data = await fetch(url, {
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    }).then(r => r.json());
+
+    // 3) VISA MATCHER
+    const div = document.getElementById("output");
+    div.innerHTML = "";
+
+    if (!data.length) {
+        div.innerHTML = "Inga matcher denna dag.";
+        return;
+    }
+
+    data.forEach(comp => {
+        comp.Matches.forEach(m => {
+            const el = document.createElement("div");
+            el.className = "match";
+            el.innerHTML = `
+                <b>${m.HomeTeam} – ${m.AwayTeam}</b><br>
+                ${m.MatchDateTime}<br>
+                Arena: ${m.MainVenueName || m.Venue || "?"}<br>
+                Domare: ${m.Referee1 || "-"} & ${m.Referee2 || "-"}
+            `;
+            div.appendChild(el);
+        });
+    });
+}
+</script>
+
+</body>
+</html>
