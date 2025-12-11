@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>DʒaniQ RefStat – Unified</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: linear-gradient(180deg, #1A1033 0%, #6D28D9 100%);
+    min-height: 100vh;
+    color: white;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 18px;
+    padding: 16px;
+  }
+
+  .input, .select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+  }
+  .input::placeholder { color: rgba(255,255,255,0.5); }
+
+  .btn {
+    background: #6D28D9;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
+  }
+  .btn:hover { background: #5B21B6; }
+
+  .toggle-group {
+    display: flex;
+    background: rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 4px;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .toggle-active {
+    background: #6D28D9;
+  }
+
+  .toggle-inactive {
+    background: transparent;
+  }
+
+  table td, table th {
+    padding: 6px;
+  }
+</style>
+</head>
+
+<body class="p-4">
+
+<!-- HEADER -->
+<header class="mb-6 text-center">
+  <h1 class="text-2xl font-bold tracking-tight">DʒaniQ RefStat</h1>
+  <p class="text-sm opacity-80">Unified Fotboll & Innebandy Statistik</p>
+</header>
+
+
+<!-- SPORT CHOOSER -->
+<div class="toggle-group mb-6">
+  <div id="sportFotboll" class="toggle-btn toggle-active">Fotboll</div>
+  <div id="sportInnebandy" class="toggle-btn toggle-inactive">Innebandy</div>
+</div>
+
+
+<!-- FILTER CARD -->
+<div class="card mb-6 space-y-4">
+
+  <!-- Förbund -->
+  <div>
+    <label class="text-sm font-semibold">Förbund</label>
+    <select id="forbundSelect" class="select mt-1"></select>
+  </div>
+
+  <!-- Datum -->
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="text-sm font-semibold">Från</label>
+      <input id="dateFrom" type="date" class="input mt-1">
+    </div>
+
+    <div>
+      <label class="text-sm font-semibold">Till</label>
+      <input id="dateTo" type="date" class="input mt-1">
+    </div>
+  </div>
+
+  <button id="btnLoad" class="btn">Ladda statistik</button>
+
+</div>
+
+
+<!-- MODE TOGGLE -->
+<div class="toggle-group mb-6">
+  <div id="modeTopplista" class="toggle-btn toggle-active">Topplista</div>
+  <div id="modeSerier" class="toggle-btn toggle-inactive">Serier</div>
+  <div id="modeDomare" class="toggle-btn toggle-inactive">Domare</div>
+</div>
+
+<!-- DYNAMISK MODE-INNEHÅLL -->
+<div id="modeContent" class="mb-6"></div>
+
+<!-- RESULT -->
+<div id="resultArea"></div>
+
+
+<script>
+// =====================================================================
+// GLOBAL STATE
+// =====================================================================
+let state = {
+  sport: "fotboll",
+
+  fotboll: [],
+  innebandy: [],
+
+  filtered: [],
+  mode: "Topplista"
+};
+
+
+// =====================================================================
+// FÖRBUNDSLISTOR
+// =====================================================================
+const FOTBOLL_FED = [
+  { id: 1, name: "Nationellt" },
+  { id: 7, name: "Göteborg" },
+  { id: 14, name: "Skåne" },
+  { id: 8, name: "Halland" },
+  { id: 21, name: "Västergötland" },
+  { id: 16, name: "Stockholm" },
+  { id: 12, name: "Norrbotten" }
+];
+
+const INNEBANDY_FED = [
+  { id: 21, name: "Västsvenska IBF" },
+  { id: 13, name: "Bohuslän-Dals IBF" },
+  { id: 7, name: "Småland/Blekinge" },
+  { id: 6, name: "Skånes IBF" },
+  { id: 8, name: "Stockholms IBF" },
+  { id: 4, name: "Norrbottens IBF" }
+];
+
+
+// =====================================================================
+// RENDER FÖRBUND
+// =====================================================================
+function renderForbund() {
+  const sel = document.getElementById("forbundSelect");
+  sel.innerHTML = "";
+
+  const list = state.sport === "fotboll" ? FOTBOLL_FED : INNEBANDY_FED;
+
+  list.forEach(f => {
+    const opt = document.createElement("option");
+    opt.value = f.id;
+    opt.textContent = f.name;
+    sel.appendChild(opt);
+  });
+}
+
+renderForbund();
+
+
+// =====================================================================
+// SPORTTOGGLE
+// =====================================================================
+function setSport(s) {
+  state.sport = s;
+
+  document.getElementById("sportFotboll").classList.toggle("toggle-active", s==="fotboll");
+  document.getElementById("sportInnebandy").classList.toggle("toggle-active", s==="innebandy");
+
+  document.getElementById("sportFotboll").classList.toggle("toggle-inactive", s!=="fotboll");
+  document.getElementById("sportInnebandy").classList.toggle("toggle-inactive", s!=="innebandy");
+
+  renderForbund();
+  renderModeFields();
+  clearResults();
+}
+
+document.getElementById("sportFotboll").onclick = () => setSport("fotboll");
+document.getElementById("sportInnebandy").onclick = () => setSport("innebandy");
+
+
+// =====================================================================
+// MODE TOGGLE
+// =====================================================================
+function setMode(m) {
+  state.mode = m;
+
+  ["Topplista","Serier","Domare"].forEach(x => {
+    document.getElementById("mode"+x).classList.toggle("toggle-active", x === m);
+    document.getElementById("mode"+x).classList.toggle("toggle-inactive", x !== m);
+  });
+
+  renderModeFields();
+  filterData();
+  renderResults();
+}
+
+document.getElementById("modeTopplista").onclick = () => setMode("Topplista");
+document.getElementById("modeSerier").onclick    = () => setMode("Serier");
+document.getElementById("modeDomare").onclick    = () => setMode("Domare");
+
+
+// =====================================================================
+// DYNAMISK MODE-INNEHÅLL
+// =====================================================================
+function renderModeFields() {
+  const area = document.getElementById("modeContent");
+  const m = state.mode;
+
+  if (m === "Topplista") {
+    area.innerHTML = `
+      <input id="searchRef" class="input" placeholder="Sök domare...">
+    `;
+    return;
+  }
+
+  if (m === "Serier") {
+    area.innerHTML = `
+      <select id="serieSelect" class="select">
+        <option value="">– välj serie –</option>
+      </select>
+    `;
+    return;
+  }
+
+  if (m === "Domare") {
+    area.innerHTML = `
+      <select id="domareSelect" class="select">
+        <option value="">– välj domare –</option>
+      </select>
+    `;
+  }
+}
+
+renderModeFields();
+
+
+// =====================================================================
+// HÄMTA FOTBOLL
+// =====================================================================
+async function fetchFotboll(date, fed) {
+  const url =
+    `https://www.gbgfotboll.se/api/matches-today/games/?showReferees=true&associationId=${fed}&date=${date}`;
+
+  const res = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
+  const data = await res.json();
+
+  let out = [];
+
+  for (const comp of (data.competitions || [])) {
+    for (const g of comp.games || []) {
+      out.push({
+        sport: "fotboll",
+        serie: comp.name,
+        date: g.date.slice(0,10),
+        time: g.date.slice(11,16),
+        hall: g.location,
+        home: g.homeTeam?.name,
+        away: g.awayTeam?.name,
+        referees: (g.referees || []).map(r => ({
+          name: r.name,
+          role: r.roleDescription || ""
+        }))
+      });
+    }
+  }
+
+  return out;
+}
+
+
+// =====================================================================
+// HÄMTA INNEBANDY
+// =====================================================================
+async function fetchInnebandy(date, fed) {
+  const url = `https://refstat-test.jasmin-e21.workers.dev/?date=${date}&fed=${fed}`;
+  const res = await fetch(url);
+  const data = await res.json();
+
+  let out = [];
+
+  data.forEach(block => {
+    block.Matches.forEach(m => {
+      out.push({
+        sport: "innebandy",
+        serie: block.Name,
+        date: m.MatchDateTime.slice(0,10),
+        time: m.MatchDateTime.slice(11,16),
+        hall: m.Venue,
+        home: m.HomeTeam,
+        away: m.AwayTeam,
+        referees: [
+          { name: m.Referee1, role: "" },
+          { name: m.Referee2, role: "" }
+        ]
+      });
+    });
+  });
+
+  return out;
+}
+
+
+// =====================================================================
+// LADDNING AV INTERVALL
+// =====================================================================
+async function loadData() {
+  const from = document.getElementById("dateFrom").value;
+  const to   = document.getElementById("dateTo").value;
+  const fed  = document.getElementById("forbundSelect").value;
+
+  if (!from || !to) return alert("Välj datumintervall!");
+
+  let start = new Date(from);
+  let end   = new Date(to);
+
+  let out = [];
+
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+    const iso = d.toISOString().slice(0,10);
+
+    if (state.sport === "fotboll") {
+      out.push(...await fetchFotboll(iso, fed));
+    } else {
+      out.push(...await fetchInnebandy(iso, fed));
+    }
+  }
+
+  if (state.sport === "fotboll") state.fotboll = out;
+  else state.innebandy = out;
+
+  populateLists();
+  filterData();
+  renderResults();
+}
+
+document.getElementById("btnLoad").onclick = loadData;
+
+
+// =====================================================================
+// DROPDOWNS (serie & domare)
+// =====================================================================
+function populateLists() {
+  const data = state.sport === "fotboll" ? state.fotboll : state.innebandy;
+
+  const serieSel = document.getElementById("serieSelect");
+  const domSel   = document.getElementById("domareSelect");
+
+  if (serieSel) serieSel.innerHTML = '<option value="">– välj serie –</option>';
+  if (domSel)   domSel.innerHTML   = '<option value="">– välj domare –</option>';
+
+  let series = new Set();
+  let refs   = new Set();
+
+  data.forEach(m => {
+    series.add(m.serie);
+    m.referees.forEach(r => refs.add(r.name));
+  });
+
+  if (serieSel)
+    [...series].sort().forEach(s => serieSel.innerHTML += `<option>${s}</option>`);
+
+  if (domSel)
+    [...refs].sort().forEach(r => domSel.innerHTML += `<option>${r}</option>`);
+}
+
+
+// =====================================================================
+// FILTRERING
+// =====================================================================
+function filterData() {
+  const data = state.sport === "fotboll" ? state.fotboll : state.innebandy;
+  let out = [...data];
+
+  if (state.mode === "Topplista") {
+    const q = document.getElementById("searchRef")?.value?.toLowerCase() || "";
+    if (q) out = out.filter(m => m.referees.some(r => r.name.toLowerCase().includes(q)));
+  }
+
+  if (state.mode === "Serier") {
+    const s = document.getElementById("serieSelect")?.value;
+    if (s) out = out.filter(m => m.serie === s);
+  }
+
+  if (state.mode === "Domare") {
+    const d = document.getElementById("domareSelect")?.value;
+    if (d) out = out.filter(m => m.referees.some(r => r.name === d));
+  }
+
+  state.filtered = out;
+}
+
+
+// =====================================================================
+// RENDER RESULTS
+// =====================================================================
+function clearResults() {
+  document.getElementById("resultArea").innerHTML = "";
+}
+
+function renderResults() {
+  const area = document.getElementById("resultArea");
+  const list = state.filtered;
+
+  if (!list.length) {
+    area.innerHTML = `<p class="opacity-80 text-center">Inga resultat</p>`;
+    return;
+  }
+
+  if (state.mode === "Topplista") {
+    renderToplist(area);
+    return;
+  }
+
+  renderMatchCards(area);
+}
+
+
+// =====================================================================
+// TOPPLISTA
+// =====================================================================
+function renderToplist(area) {
+  let counter = {};
+
+  state.filtered.forEach(m => {
+    m.referees.forEach(r => {
+      if (!r.name) return;
+      counter[r.name] = (counter[r.name] || 0) + 1;
+    });
+  });
+
+  let ranking = Object.entries(counter).sort((a,b)=>b[1]-a[1]);
+
+  let html = `
+    <div class="card">
+      <h2 class="text-xl font-bold mb-3">🏆 Mest aktiva domare</h2>
+      <div class="space-y-2">
+  `;
+
+  ranking.forEach(([name,count],i)=>{
+    html += `
+      <div class="flex justify-between border-b border-white/10 pb-1">
+        <span>${i+1}. ${name}</span>
+        <span class="font-semibold">${count}</span>
+      </div>
+    `;
+  });
+
+  html += "</div></div>";
+
+  area.innerHTML = html;
+}
+
+
+// =====================================================================
+// MATCH CARDS
+// =====================================================================
+function renderMatchCards(area) {
+  let html = "";
+
+  state.filtered.forEach(m=>{
+    html += `
+      <div class="card mb-3">
+        <div class="opacity-70 text-sm mb-1">${m.serie}</div>
+        <div class="font-semibold">${m.home} – ${m.away}</div>
+        <div class="opacity-80 text-sm mt-1">${m.date} ${m.time}</div>
+        <div class="opacity-80 text-sm">${m.hall}</div>
+
+        <div class="mt-3">
+          <div class="font-semibold mb-1">Domare</div>
+          ${m.referees.map(r => `<div>${r.name}</div>`).join("")}
+        </div>
+      </div>
+    `;
+  });
+
+  area.innerHTML = html;
+}
+
+
+</script>
+
+</body>
+</html>
