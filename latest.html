@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DʒaniQ RefStat – Unified</title>
+<title>DʒaniQ RefStat</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -19,24 +19,21 @@
           display: ['Outfit', 'sans-serif'],
         },
         colors: {
-          dark: {
-            bg: '#09090b',      // Zinc 950
-            surface: '#18181b', // Zinc 900
-            border: '#27272a',  // Zinc 800
-          },
-          brand: {
-            start: '#8b5cf6', // Violet 500
-            end: '#d946ef',   // Fuchsia 500
-          }
+          dark: { bg: '#09090b', surface: '#18181b', border: '#27272a' },
+          brand: { start: '#8b5cf6', end: '#d946ef' }
         },
         animation: {
           'fade-in': 'fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-          'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          'pulse-glow': 'pulseGlow 2s infinite',
         },
         keyframes: {
           fadeIn: {
             '0%': { opacity: '0', transform: 'translateY(10px) scale(0.98)' },
             '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+          },
+          pulseGlow: {
+            '0%, 100%': { boxShadow: '0 0 15px rgba(139, 92, 246, 0.3)' },
+            '50%': { boxShadow: '0 0 25px rgba(217, 70, 239, 0.6)' },
           }
         }
       }
@@ -45,38 +42,17 @@
 </script>
 
 <style>
-  /* --- GLOBAL THEME --- */
-  body {
-    background-color: #09090b;
-    color: #e4e4e7; /* Zinc 200 */
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Ambient Background Glows */
-  .glow-orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(100px);
-    z-index: -1;
-    opacity: 0.4;
-  }
+  body { background-color: #09090b; color: #e4e4e7; min-height: 100vh; overflow-x: hidden; }
+  .glow-orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.4; }
   .orb-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #4c1d95; }
   .orb-2 { bottom: -10%; right: -10%; width: 600px; height: 600px; background: #0f172a; }
-  .orb-3 { top: 40%; left: 30%; width: 300px; height: 300px; background: #312e81; opacity: 0.2; }
-
-  /* Custom Inputs styling to remove default arrows */
-  select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-  }
-  
-  /* Scrollbar styling */
+  select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
   ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+  .step-disabled { opacity: 0.3; pointer-events: none; filter: grayscale(1); transition: all 0.4s ease; }
+  .step-active { opacity: 1; pointer-events: auto; filter: grayscale(0); transition: all 0.4s ease; }
 </style>
 </head>
 
@@ -84,30 +60,22 @@
 
   <div class="glow-orb orb-1"></div>
   <div class="glow-orb orb-2"></div>
-  <div class="glow-orb orb-3"></div>
 
   <div class="max-w-7xl mx-auto relative">
     
     <header class="mb-10 flex items-center border-b border-white/5 pb-6">
       <div class="animate-fade-in w-full text-center md:text-left">
-        
         <h1 class="font-display text-4xl md:text-5xl tracking-tight flex items-baseline justify-center md:justify-start gap-3 mb-2">
             <span class="font-semibold text-zinc-500">DʒaniQ</span>
-            <span class="font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-fuchsia-400 to-white drop-shadow-[0_0_15px_rgba(139,92,246,0.4)]">
-                RefStat
-            </span>
+            <span class="font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-fuchsia-400 to-white drop-shadow-[0_0_15px_rgba(139,92,246,0.4)]">RefStat</span>
         </h1>
-
         <div class="flex items-center justify-center md:justify-start gap-2 ml-1">
             <span class="relative flex h-1.5 w-1.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
             </span>
-            <p class="text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-[0.25em]">
-                Sveriges samlade domarstatistik
-            </p>
+            <p class="text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-[0.25em]">Sveriges samlade domarstatistik</p>
         </div>
-
       </div>
     </header>
 
@@ -115,80 +83,85 @@
 
       <aside class="lg:col-span-4 xl:col-span-3 space-y-8">
         
-        <div class="p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md shadow-xl flex gap-1">
-          <button id="sportFotboll" class="flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-300 transform hover:text-white">Fotboll</button>
-          <button id="sportInnebandy" class="flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-300 transform hover:text-white">Innebandy</button>
+        <div class="space-y-2">
+            <label class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-1">1. Välj Sport</label>
+            <div class="p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md shadow-xl flex gap-1">
+                <button id="sportFotboll" onclick="selectSport('fotboll')" class="flex-1 py-3 rounded-xl text-sm font-bold text-zinc-500 hover:text-white transition-all duration-300">Fotboll</button>
+                <button id="sportInnebandy" onclick="selectSport('innebandy')" class="flex-1 py-3 rounded-xl text-sm font-bold text-zinc-500 hover:text-white transition-all duration-300">Innebandy</button>
+            </div>
         </div>
 
-        <div class="group relative rounded-3xl p-6 bg-dark-surface/80 border border-white/5 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:border-white/10">
+        <div class="group relative rounded-3xl p-6 bg-dark-surface/80 border border-white/5 backdrop-blur-xl shadow-2xl">
           <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-50"></div>
 
           <div class="space-y-6">
-            
-            <div>
-              <label class="block text-xs uppercase tracking-widest font-bold text-zinc-500 mb-2 ml-1">Förbund</label>
+            <div id="step-federation" class="step-disabled">
+              <label class="block text-[10px] uppercase tracking-widest font-bold text-zinc-500 mb-2 ml-1">2. Välj Förbund</label>
               <div class="relative">
-                  <select id="forbundSelect" class="w-full bg-black/30 text-zinc-200 text-sm font-medium border border-white/10 rounded-xl px-4 py-3.5 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 focus:bg-black/50 transition-all cursor-pointer hover:border-white/20"></select>
-                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
-                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                  <select id="forbundSelect" onchange="enableDates()" class="w-full bg-black/30 text-zinc-200 text-sm font-medium border border-white/10 rounded-xl px-4 py-3.5 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 focus:bg-black/50 transition-all cursor-pointer hover:border-white/20"><option value="">-- Välj --</option></select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+              </div>
+            </div>
+
+            <div id="step-dates" class="step-disabled space-y-3">
+              <div class="flex justify-between items-end">
+                  <label class="block text-[10px] uppercase tracking-widest font-bold text-zinc-500 ml-1">3. Datum</label>
+                  
+                  <div class="flex gap-1">
+                      <button onclick="setQuickDate(7)" class="text-[9px] font-bold bg-white/5 hover:bg-white/10 border border-white/5 px-2 py-1 rounded text-zinc-400 hover:text-white transition">7d</button>
+                      <button onclick="setQuickDate(30)" class="text-[9px] font-bold bg-white/5 hover:bg-white/10 border border-white/5 px-2 py-1 rounded text-zinc-400 hover:text-white transition">30d</button>
+                      <button onclick="setQuickDate(365)" class="text-[9px] font-bold bg-white/5 hover:bg-white/10 border border-white/5 px-2 py-1 rounded text-zinc-400 hover:text-white transition">1 år</button>
                   </div>
               </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs uppercase tracking-widest font-bold text-zinc-500 mb-2 ml-1">Från</label>
-                <input id="dateFrom" type="date" class="w-full bg-black/30 text-zinc-200 text-sm font-medium border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 transition-all hover:border-white/20 uppercase">
-              </div>
-              <div>
-                <label class="block text-xs uppercase tracking-widest font-bold text-zinc-500 mb-2 ml-1">Till</label>
-                <input id="dateTo" type="date" class="w-full bg-black/30 text-zinc-200 text-sm font-medium border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 transition-all hover:border-white/20 uppercase">
+              
+              <div class="grid grid-cols-2 gap-3">
+                <input id="dateFrom" type="date" onchange="validateForm()" class="w-full bg-black/30 text-zinc-200 text-sm font-medium border border-white/10 rounded-xl px-2 py-3 outline-none focus:border-violet-500/50 transition-all hover:border-white/20 uppercase">
+                <input id="dateTo" type="date" onchange="validateForm()" class="w-full bg-black/30 text-zinc-200 text-sm font-medium border border-white/10 rounded-xl px-2 py-3 outline-none focus:border-violet-500/50 transition-all hover:border-white/20 uppercase">
               </div>
             </div>
 
-            <button id="btnLoad" class="relative w-full overflow-hidden group/btn rounded-xl bg-white text-black font-display font-black tracking-wide py-4 shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:scale-[1.02] active:scale-[0.98]">
-              <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"></span>
-              <span class="relative z-10 flex items-center justify-center gap-2">
-                LADDA STATISTIK 
-                <svg class="w-4 h-4 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-              </span>
+            <button id="btnLoad" onclick="loadData()" disabled class="relative w-full overflow-hidden group/btn rounded-xl bg-zinc-800 text-zinc-500 font-display font-black tracking-wide py-4 border border-white/5 transition-all duration-300 opacity-50 cursor-not-allowed">
+              <span class="relative z-10 flex items-center justify-center gap-2">HÄMTA STATISTIK <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
             </button>
             
-            <div id="loadingContainer" class="hidden animate-fade-in pt-2">
-              <div class="flex justify-between text-[10px] font-bold text-violet-400 mb-2 uppercase tracking-wider">
-                  <span>Bearbetar data</span>
-                  <span id="loadingPercent">0%</span>
-              </div>
-              <div class="relative w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
-                  <div id="loadingBar" class="absolute left-0 top-0 h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(167,139,250,0.8)]" style="width: 0%"></div>
-              </div>
+            <div id="loadingContainer" class="hidden pt-2">
+              <div class="flex justify-between text-[10px] font-bold text-violet-400 mb-2 uppercase tracking-wider"><span>Bearbetar data</span><span id="loadingPercent">0%</span></div>
+              <div class="relative w-full bg-white/5 rounded-full h-1.5 overflow-hidden"><div id="loadingBar" class="absolute left-0 top-0 h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(167,139,250,0.8)]" style="width: 0%"></div></div>
             </div>
-
           </div>
         </div>
-
-        <div class="space-y-3">
-          <label class="block text-xs uppercase tracking-widest font-bold text-zinc-500 ml-2">Visningsläge</label>
-          <div class="flex p-1 rounded-2xl bg-black/20 border border-white/5 backdrop-blur-sm">
-            <button id="modeTopplista" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 border border-transparent">Topplista</button>
-            <button id="modeSerier" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 border border-transparent">Serier</button>
-            <button id="modeDomare" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all duration-300 border border-transparent">Domare</button>
-          </div>
-        </div>
-
-        <div id="modeContent" class="animate-fade-in"></div>
-
       </aside>
 
-
       <main class="lg:col-span-8 xl:col-span-9">
-        <div id="resultArea" class="space-y-6 min-h-[500px]">
+        
+        <div id="mainControls" class="hidden mb-6 p-2 bg-dark-surface/90 border border-white/10 rounded-2xl flex flex-col md:flex-row gap-3 shadow-lg animate-fade-in items-stretch sticky top-4 z-50 backdrop-blur-xl">
+            <button onclick="setMode('Topplista')" class="bg-violet-500/10 hover:bg-violet-500/20 text-violet-300 hover:text-white border border-violet-500/20 rounded-xl px-4 py-3 flex items-center gap-2 transition-all font-bold text-sm whitespace-nowrap group">
+                <svg class="w-4 h-4 text-violet-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                Topplista
+            </button>
+
+            <div class="relative flex-1 group">
+                <input id="searchRef" type="text" class="block w-full px-4 py-3 rounded-xl bg-black/30 border border-transparent text-white placeholder-zinc-600 focus:outline-none focus:bg-black/50 focus:border-violet-500/50 transition-all font-medium text-sm h-full" placeholder="Sök domare (filtrerar listan)..." oninput="handleSearchInput()">
+            </div>
+
+            <div class="relative md:w-1/4">
+                <select id="serieSelect" onchange="handleSerieChange()" class="block w-full pl-4 pr-8 py-3 rounded-xl bg-white/5 border border-white/5 text-zinc-300 focus:outline-none focus:bg-white/10 focus:border-white/20 focus:text-white transition-all font-bold text-sm cursor-pointer appearance-none hover:bg-white/10 h-full"><option value="">Välj Serie</option></select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+            </div>
+
+            <div class="relative md:w-1/4">
+                <select id="domareSelect" onchange="handleDomareChange()" class="block w-full pl-4 pr-8 py-3 rounded-xl bg-white/5 border border-white/5 text-zinc-300 focus:outline-none focus:bg-white/10 focus:border-white/20 focus:text-white transition-all font-bold text-sm cursor-pointer appearance-none hover:bg-white/10 h-full"><option value="">Välj Domare</option></select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+            </div>
+        </div>
+
+        <div id="resultArea" class="space-y-4 min-h-[500px]">
           <div class="h-full flex flex-col items-center justify-center py-20 opacity-40 bg-white/5 rounded-3xl border border-dashed border-white/10">
             <div class="w-20 h-20 bg-gradient-to-tr from-violet-500/20 to-fuchsia-500/20 rounded-full flex items-center justify-center mb-6">
               <svg class="w-10 h-10 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             </div>
-            <p class="text-lg font-display font-bold text-zinc-300">Statistikcenter</p>
-            <p class="text-sm text-zinc-500">Välj parametrar till vänster för att starta.</p>
+            <p class="text-lg font-display font-bold text-zinc-300">Välj sport till vänster</p>
+            <p class="text-sm text-zinc-500">Följ stegen för att ladda data.</p>
           </div>
         </div>
       </main>
@@ -198,25 +171,7 @@
 
 <script>
 // =====================================================================
-// UI LOGIC (Unified Theme)
-// =====================================================================
-
-const CSS_ACTIVE = "bg-zinc-800 text-white shadow-lg ring-1 ring-white/20 shadow-black/50";
-const CSS_INACTIVE = "text-zinc-500 hover:text-zinc-300 hover:bg-white/5";
-
-// =====================================================================
-// GLOBAL STATE
-// =====================================================================
-let state = {
-  sport: "fotboll",
-  fotboll: [],
-  innebandy: [],
-  filtered: [],
-  mode: "Topplista"
-};
-
-// =====================================================================
-// FÖRBUNDSLISTOR
+// DATA & STATE
 // =====================================================================
 const FOTBOLL_FED = [
   { id: 1, name: "Nationellt" }, { id: 2, name: "Blekinge" }, { id: 28, name: "Bohuslän-Dalsland" },
@@ -240,187 +195,143 @@ const INNEBANDY_FED = [
   { id: 21, name: "Västsvenska IBF" }, { id: 5, name: "Örebro Läns IBF" }, { id: 16, name: "Östergötlands IBF" }
 ];
 
-function renderForbund() {
-  const sel = document.getElementById("forbundSelect");
-  if(!sel) return;
-  sel.innerHTML = "";
-  const list = state.sport === "fotboll" ? FOTBOLL_FED : INNEBANDY_FED;
-  list.forEach(f => {
-    const opt = document.createElement("option");
-    opt.value = f.id;
-    opt.textContent = f.name;
-    sel.appendChild(opt);
-  });
-}
-// Initiera förbundslistan direkt
-renderForbund();
-
-function updateToggleVisuals(id, isActive) {
-  const el = document.getElementById(id);
-  if(el) {
-    el.className = `flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-300 transform active:scale-95 ${isActive ? CSS_ACTIVE : CSS_INACTIVE}`;
-  }
-}
+let state = {
+  sport: null,
+  fotboll: [],
+  innebandy: [],
+  filtered: [],
+  mode: "Topplista",
+  searchQuery: "" // Added for toplist filtering
+};
 
 // =====================================================================
-// NAVIGATION & MODE SETTERS
+// WIZARD LOGIC
 // =====================================================================
+function selectSport(s) {
+    state.sport = s;
+    const activeClass = "bg-white text-black shadow-md";
+    const inactiveClass = "text-zinc-500 hover:text-white";
+    document.getElementById("sportFotboll").className = `flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${s==='fotboll' ? activeClass : inactiveClass}`;
+    document.getElementById("sportInnebandy").className = `flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${s==='innebandy' ? activeClass : inactiveClass}`;
 
-function setSport(s) {
-  state.sport = s;
-  updateToggleVisuals("sportFotboll", s === "fotboll");
-  updateToggleVisuals("sportInnebandy", s === "innebandy");
-  
-  // Återställ vy
-  document.getElementById("resultArea").innerHTML = `
-    <div class="h-full flex flex-col items-center justify-center py-20 opacity-40 bg-white/5 rounded-3xl border border-dashed border-white/10">
-      <div class="text-6xl mb-4 grayscale opacity-50">⚽️</div>
-      <p class="text-lg font-display font-bold text-zinc-300">Ny sport vald</p>
-      <p class="text-sm text-zinc-500">Ladda ny statistik för att fortsätta.</p>
-    </div>
-  `;
-  
-  state.fotboll = [];
-  state.innebandy = [];
-  state.filtered = [];
-  
-  renderForbund();
-}
-document.getElementById("sportFotboll").onclick = () => setSport("fotboll");
-document.getElementById("sportInnebandy").onclick = () => setSport("innebandy");
+    state.fotboll = []; state.innebandy = []; state.filtered = [];
+    document.getElementById("forbundSelect").value = "";
+    document.getElementById("dateFrom").value = "";
+    document.getElementById("dateTo").value = "";
+    
+    document.getElementById("mainControls").classList.add("hidden");
+    document.getElementById("resultArea").innerHTML = `<div class="h-full flex flex-col items-center justify-center py-20 opacity-40 bg-white/5 rounded-3xl border border-dashed border-white/10"><div class="text-6xl mb-4 grayscale opacity-50">⚡️</div><p class="text-lg font-display font-bold text-zinc-300">Sport vald</p><p class="text-sm text-zinc-500">Välj nu förbund.</p></div>`;
 
-function setMode(m) {
-  state.mode = m;
-  ["Topplista","Serier","Domare"].forEach(x => {
-    updateToggleVisuals("mode"+x, x === m);
-  });
-  
-  renderModeFields(); // Skapa inputs
-  populateLists();    // Fyll inputs med data om det finns
-  
-  // Återställ filter så vi ser allt när vi byter vy
-  if(m !== "Topplista") {
-      state.filtered = state.sport === "fotboll" ? state.fotboll : state.innebandy;
-  } else {
-      filterData();
-  }
-  
-  renderResults();
-}
-setMode("Topplista"); // Startläge
-document.getElementById("modeTopplista").onclick = () => setMode("Topplista");
-document.getElementById("modeSerier").onclick    = () => setMode("Serier");
-document.getElementById("modeDomare").onclick    = () => setMode("Domare");
+    const sel = document.getElementById("forbundSelect");
+    sel.innerHTML = '<option value="">-- Välj --</option>';
+    (s === "fotboll" ? FOTBOLL_FED : INNEBANDY_FED).forEach(f => {
+        const opt = document.createElement("option"); opt.value = f.id; opt.textContent = f.name; sel.appendChild(opt);
+    });
 
-function renderModeFields() {
-  const area = document.getElementById("modeContent");
-  const commonInputClass = "w-full bg-black/30 text-zinc-200 text-sm font-medium border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 transition-all placeholder-zinc-600";
-  
-  if (state.mode === "Topplista") {
-    area.innerHTML = `<input id="searchRef" class="${commonInputClass}" placeholder="Sök domare..." oninput="filterData(); renderResults();">`;
-    return;
-  }
-  if (state.mode === "Serier") {
-    area.innerHTML = `
-    <div class="relative">
-        <select id="serieSelect" class="${commonInputClass} appearance-none cursor-pointer" onchange="filterData(); renderResults();">
-            <option value="">– Välj serie –</option>
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </div>
-    </div>`;
-    return;
-  }
-  if (state.mode === "Domare") {
-    area.innerHTML = `
-    <div class="relative">
-        <select id="domareSelect" class="${commonInputClass} appearance-none cursor-pointer" onchange="filterData(); renderResults();">
-            <option value="">– Välj domare –</option>
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </div>
-    </div>`;
-  }
+    document.getElementById("step-federation").classList.remove("step-disabled");
+    document.getElementById("step-federation").classList.add("step-active");
+    document.getElementById("step-dates").classList.add("step-disabled");
+    validateForm();
 }
 
-// ---------------------------------------------------------
-// POPULATE LISTS (Fyll dropdowns)
-// ---------------------------------------------------------
-function populateLists() {
-  const data = state.sport === "fotboll" ? state.fotboll : state.innebandy;
-  if (!data || data.length === 0) return;
-
-  const serieSel = document.getElementById("serieSelect");
-  const domSel   = document.getElementById("domareSelect");
-
-  let series = new Set();
-  let refs   = new Set();
-
-  data.forEach(m => {
-    if(m.serie) series.add(m.serie);
-    m.referees.forEach(r => { if(r.name) refs.add(r.name); });
-  });
-
-  if (serieSel) {
-      const current = serieSel.value;
-      serieSel.innerHTML = '<option value="">– Välj serie –</option>';
-      [...series].sort().forEach(s => {
-          const opt = document.createElement("option");
-          opt.value = s;
-          opt.textContent = s;
-          serieSel.appendChild(opt);
-      });
-      if(current) serieSel.value = current;
-  }
-
-  if (domSel) {
-      const current = domSel.value;
-      domSel.innerHTML = '<option value="">– Välj domare –</option>';
-      [...refs].sort().forEach(r => {
-          const opt = document.createElement("option");
-          opt.value = r;
-          opt.textContent = r;
-          domSel.appendChild(opt);
-      });
-      if(current) domSel.value = current;
-  }
-}
-
-// ---------------------------------------------------------
-// FILTRERING
-// ---------------------------------------------------------
-function filterData() {
-  const data = state.sport === "fotboll" ? state.fotboll : state.innebandy;
-  let out = [...data];
-
-  if (state.mode === "Topplista") {
-    const q = document.getElementById("searchRef")?.value?.toLowerCase() || "";
-    if (q) out = out.filter(m => m.referees.some(r => r.name && r.name.toLowerCase().includes(q)));
-  }
-  else if (state.mode === "Serier") {
-    const s = document.getElementById("serieSelect")?.value;
-    if (s) {
-        out = out.filter(m => m.serie === s);
+function enableDates() {
+    const fed = document.getElementById("forbundSelect").value;
+    if (fed) {
+        document.getElementById("step-dates").classList.remove("step-disabled");
+        document.getElementById("step-dates").classList.add("step-active");
     } else {
-        out = []; // Visa inget om ingen serie vald
+        document.getElementById("step-dates").classList.add("step-disabled");
     }
-  }
-  else if (state.mode === "Domare") {
-    const d = document.getElementById("domareSelect")?.value;
-    if (d) {
-        out = out.filter(m => m.referees.some(r => r.name === d));
+    validateForm();
+}
+
+function setQuickDate(days) {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - days);
+    
+    document.getElementById("dateTo").value = end.toISOString().split('T')[0];
+    document.getElementById("dateFrom").value = start.toISOString().split('T')[0];
+    validateForm();
+}
+
+function validateForm() {
+    const fed = document.getElementById("forbundSelect").value;
+    const from = document.getElementById("dateFrom").value;
+    const to = document.getElementById("dateTo").value;
+    const btn = document.getElementById("btnLoad");
+
+    let isValid = false;
+    if (state.sport && fed && from && to) {
+        if (new Date(from) <= new Date(to)) isValid = true;
+    }
+
+    if (isValid) {
+        btn.disabled = false;
+        btn.classList.remove("opacity-50", "cursor-not-allowed", "bg-zinc-800", "text-zinc-500");
+        btn.classList.add("bg-white", "text-black", "shadow-[0_0_20px_rgba(255,255,255,0.2)]", "animate-pulse-glow");
     } else {
-        out = []; // Visa inget om ingen domare vald
+        btn.disabled = true;
+        btn.classList.add("opacity-50", "cursor-not-allowed", "bg-zinc-800", "text-zinc-500");
+        btn.classList.remove("bg-white", "text-black", "shadow-[0_0_20px_rgba(255,255,255,0.2)]", "animate-pulse-glow");
     }
-  }
-  state.filtered = out;
 }
 
 // =====================================================================
-// API: HÄMTA DATA
+// DATA LOADING & FETCHING
 // =====================================================================
+async function loadData() {
+    const from = document.getElementById("dateFrom").value;
+    const to = document.getElementById("dateTo").value;
+    const fed = document.getElementById("forbundSelect").value;
+    const btn = document.getElementById("btnLoad");
+    const lc = document.getElementById("loadingContainer");
+    const lb = document.getElementById("loadingBar");
+    const lp = document.getElementById("loadingPercent");
+
+    btn.innerHTML = `<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5 text-zinc-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> HÄMTAR...</span>`;
+    btn.classList.remove("bg-white", "text-black", "animate-pulse-glow");
+    btn.classList.add("bg-zinc-800", "text-zinc-500");
+    
+    lc.classList.remove("hidden");
+    lb.style.width = "0%"; lp.textContent = "0%";
+
+    try {
+        let start = new Date(from);
+        let end = new Date(to);
+        let out = [];
+        const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+        let processedDays = 0;
+
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+            const iso = d.toISOString().slice(0,10);
+            if (state.sport === "fotboll") out.push(...await fetchFotboll(iso, fed));
+            else out.push(...await fetchInnebandy(iso, fed));
+
+            processedDays++;
+            const percent = Math.round((processedDays / totalDays) * 100);
+            lb.style.width = `${percent}%`; lp.textContent = `${percent}%`;
+        }
+
+        if (state.sport === "fotboll") state.fotboll = out;
+        else state.innebandy = out;
+
+        populateLists();
+        setMode("Topplista");
+        document.getElementById("mainControls").classList.remove("hidden");
+        document.getElementById("mainControls").classList.add("flex");
+
+    } catch (error) {
+        document.getElementById("resultArea").innerHTML = `<div class="bg-red-900/20 border border-red-500/50 p-6 rounded-2xl text-center text-red-200">Fel vid laddning.</div>`;
+    } finally {
+        btn.innerHTML = `<span class="relative z-10 flex items-center justify-center gap-2">HÄMTA IGEN <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></span>`;
+        btn.disabled = false;
+        btn.classList.remove("opacity-50", "cursor-not-allowed");
+        btn.classList.add("hover:text-white");
+        setTimeout(() => { lc.classList.add("hidden"); }, 500);
+    }
+}
+
 async function fetchFotboll(date, fed) {
   const url = `https://www.gbgfotboll.se/api/matches-today/games/?showReferees=true&associationId=${fed}&date=${date}`;
   try {
@@ -431,19 +342,13 @@ async function fetchFotboll(date, fed) {
     for (const comp of (data.competitions || [])) {
       for (const g of comp.games || []) {
         out.push({
-          sport: "fotboll",
-          serie: comp.name,
-          date: g.date.slice(0,10),
-          time: g.date.slice(11,16),
-          hall: g.location,
-          home: g.homeTeam?.name,
-          away: g.awayTeam?.name,
+          sport: "fotboll", serie: comp.name, date: g.date.slice(0,10), time: g.date.slice(11,16), hall: g.location, home: g.homeTeam?.name, away: g.awayTeam?.name,
           referees: (g.referees || []).map(r => ({ name: r.name, role: r.roleDescription || "" }))
         });
       }
     }
     return out;
-  } catch(e) { console.error("Fotboll error:", e); return []; }
+  } catch(e) { return []; }
 }
 
 async function fetchInnebandy(date, fed) {
@@ -453,19 +358,12 @@ async function fetchInnebandy(date, fed) {
     if(!res.ok) return [];
     const data = await res.json();
     let out = [];
-    // Säkerställ att data är en array
     if(Array.isArray(data)) {
         data.forEach(block => {
           if(block.Matches) {
               block.Matches.forEach(m => {
                 out.push({
-                  sport: "innebandy",
-                  serie: block.Name,
-                  date: m.MatchDateTime.slice(0,10),
-                  time: m.MatchDateTime.slice(11,16),
-                  hall: m.Venue,
-                  home: m.HomeTeam,
-                  away: m.AwayTeam,
+                  sport: "innebandy", serie: block.Name, date: m.MatchDateTime.slice(0,10), time: m.MatchDateTime.slice(11,16), hall: m.Venue, home: m.HomeTeam, away: m.AwayTeam,
                   referees: [{ name: m.Referee1 }, { name: m.Referee2 }]
                 });
               });
@@ -473,221 +371,155 @@ async function fetchInnebandy(date, fed) {
         });
     }
     return out;
-  } catch(e) { console.error("Innebandy error:", e); return []; }
+  } catch(e) { return []; }
 }
 
 // =====================================================================
-// MAIN LOAD FUNCTION (FIXAD)
+// MODE CONTROLLERS
 // =====================================================================
-async function loadData() {
-  const from = document.getElementById("dateFrom").value;
-  const to   = document.getElementById("dateTo").value;
-  const fed  = document.getElementById("forbundSelect").value;
-  
-  if (!from || !to) return alert("Välj datumintervall!");
-  
-  const btn = document.getElementById("btnLoad");
-  const loadingContainer = document.getElementById("loadingContainer");
-  const loadingBar = document.getElementById("loadingBar");
-  const loadingPercent = document.getElementById("loadingPercent");
-
-  // Start UI State
-  btn.innerHTML = `<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> HÄMTAR...</span>`;
-  btn.disabled = true;
-  btn.classList.add("opacity-80", "cursor-not-allowed");
-  
-  loadingContainer.classList.remove("hidden");
-  loadingBar.style.width = "0%";
-  loadingPercent.textContent = "0%";
-
-  // SAFE GUARD: Använd try/catch/finally för att garantera att knappen återställs
-  try {
-      let start = new Date(from);
-      let end   = new Date(to);
-      let out = [];
-
-      const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
-      let processedDays = 0;
-
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
-        const iso = d.toISOString().slice(0,10);
-        
-        if (state.sport === "fotboll") out.push(...await fetchFotboll(iso, fed));
-        else out.push(...await fetchInnebandy(iso, fed));
-
-        processedDays++;
-        const percent = Math.round((processedDays / totalDays) * 100);
-        loadingBar.style.width = `${percent}%`;
-        loadingPercent.textContent = `${percent}%`;
-      }
-
-      // Spara data
-      if (state.sport === "fotboll") state.fotboll = out;
-      else state.innebandy = out;
-
-      // Uppdatera UI
-      populateLists();
-      filterData();
-      renderResults();
-
-  } catch (error) {
-      console.error("Ett fel uppstod vid laddning:", error);
-      document.getElementById("resultArea").innerHTML = `<div class="bg-red-900/20 border border-red-500/50 p-6 rounded-2xl text-center text-red-200">Ett fel uppstod vid hämtning av data. Försök igen eller välj ett kortare intervall.</div>`;
-  } finally {
-      // Återställ alltid knappen, oavsett fel eller succé
-      btn.innerHTML = `
-          <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"></span>
-          <span class="relative z-10 flex items-center justify-center gap-2">
-            LADDA STATISTIK 
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-          </span>`;
-      btn.disabled = false;
-      btn.classList.remove("opacity-80", "cursor-not-allowed");
-      
-      setTimeout(() => { loadingContainer.classList.add("hidden"); }, 500);
-  }
+function setMode(m) {
+    state.mode = m;
+    if(m === "Topplista") {
+        document.getElementById("searchRef").value = ""; 
+        document.getElementById("serieSelect").value = "";
+        document.getElementById("domareSelect").value = "";
+        state.searchQuery = ""; // Reset search
+        filterData();
+        renderResults();
+    }
 }
-document.getElementById("btnLoad").onclick = loadData;
 
+function handleSearchInput() {
+    const q = document.getElementById("searchRef").value.toLowerCase();
+    
+    // Switch to Toplist mode if searching
+    if (state.mode !== "Topplista") {
+        state.mode = "Topplista";
+        document.getElementById("serieSelect").value = "";
+        document.getElementById("domareSelect").value = "";
+    }
+    
+    // NEW: Real-time filtering for Toplist
+    state.searchQuery = q;
+    renderResults();
+}
+
+function handleSerieChange() {
+    const s = document.getElementById("serieSelect").value;
+    if(!s) return;
+    state.mode = "Serier";
+    state.filtered = (state.sport === "fotboll" ? state.fotboll : state.innebandy).filter(m => m.serie === s);
+    document.getElementById("searchRef").value = "";
+    document.getElementById("domareSelect").value = "";
+    renderResults();
+}
+
+function handleDomareChange() {
+    const d = document.getElementById("domareSelect").value;
+    if(!d) return;
+    state.mode = "Domare";
+    state.filtered = (state.sport === "fotboll" ? state.fotboll : state.innebandy).filter(m => m.referees.some(r => r.name === d));
+    document.getElementById("searchRef").value = "";
+    document.getElementById("serieSelect").value = "";
+    renderResults();
+}
+
+function filterData() {
+    state.filtered = state.sport === "fotboll" ? state.fotboll : state.innebandy;
+}
+
+function populateLists() {
+    const data = state.sport === "fotboll" ? state.fotboll : state.innebandy;
+    const serieSel = document.getElementById("serieSelect");
+    const domSel = document.getElementById("domareSelect");
+    let series = new Set();
+    let refs = new Set();
+    data.forEach(m => {
+        if(m.serie) series.add(m.serie);
+        m.referees.forEach(r => { if(r.name) refs.add(r.name); });
+    });
+    serieSel.innerHTML = '<option value="">Välj Serie</option>';
+    [...series].sort().forEach(s => { const opt = document.createElement("option"); opt.value = s; opt.textContent = s; serieSel.appendChild(opt); });
+    domSel.innerHTML = '<option value="">Välj Domare</option>';
+    [...refs].sort().forEach(r => { const opt = document.createElement("option"); opt.value = r; opt.textContent = r; domSel.appendChild(opt); });
+}
 
 // =====================================================================
-// RENDER RESULT
+// RENDERERS
 // =====================================================================
-
 function renderResults() {
-  const area = document.getElementById("resultArea");
-  
-  // Kolla om vi har någon data alls
-  const rawData = state.sport === "fotboll" ? state.fotboll : state.innebandy;
-  if (!rawData || rawData.length === 0) {
-     if(state.mode === "Topplista") {
-         area.innerHTML = `<div class="bg-white/5 rounded-2xl p-12 text-center border border-white/5 backdrop-blur-md"><p class="text-zinc-500 font-medium">Ingen data laddad ännu.</p></div>`;
-     }
-     return;
-  }
+    const area = document.getElementById("resultArea");
+    const allData = state.sport === "fotboll" ? state.fotboll : state.innebandy;
 
-  const list = state.filtered;
-
-  // TOPPLISTA LÄGE
-  if (state.mode === "Topplista") {
-    if(!list || list.length === 0) { 
-        area.innerHTML = `<div class="bg-white/5 rounded-2xl p-12 text-center border border-white/5 backdrop-blur-md"><p class="text-zinc-500 font-medium">Inga matcher hittades för denna sökning.</p></div>`; 
-        return; 
-    }
-    renderToplist(area, list, "Domarligan");
-  } 
-  // SERIE LÄGE
-  else if (state.mode === "Serier") {
-    const selectedSerie = document.getElementById("serieSelect")?.value;
-    if (!selectedSerie) {
-        area.innerHTML = `<div class="bg-white/5 rounded-2xl p-12 text-center border border-dashed border-white/10 backdrop-blur-md"><p class="text-zinc-400 font-medium">Välj en serie i listan för att se statistik</p></div>`;
+    if (!allData || allData.length === 0) {
+        area.innerHTML = `<div class="bg-white/5 rounded-2xl p-12 text-center border border-white/5 backdrop-blur-md"><p class="text-zinc-500 font-medium">Ingen data att visa.</p></div>`;
         return;
     }
-    renderLeagueView(area, selectedSerie, list);
-  } 
-  // DOMAR LÄGE
-  else if (state.mode === "Domare") {
-    const selectedRef = document.getElementById("domareSelect")?.value;
-    if (!selectedRef) {
-        area.innerHTML = `<div class="bg-white/5 rounded-2xl p-12 text-center border border-dashed border-white/10 backdrop-blur-md"><p class="text-zinc-400 font-medium">Välj en domare i listan för att se profil</p></div>`;
-        return;
+
+    if (state.mode === "Topplista") {
+        renderToplist(area, allData);
+    } 
+    else if (state.mode === "Serier") {
+        const s = document.getElementById("serieSelect").value;
+        renderLeagueView(area, s, state.filtered);
     }
-    renderRefereeProfile(area, selectedRef, list);
-  }
+    else if (state.mode === "Domare") {
+        const d = document.getElementById("domareSelect").value;
+        renderRefereeProfile(area, d, state.filtered);
+    }
 }
 
-// ---------------------------------------------------------
-// RENDER: TOPPLISTA
-// ---------------------------------------------------------
-function renderToplist(area, matches, title) {
-  let counter = {};
-  
-  // Räkna matcher per domare
-  matches.forEach(m => {
-    if(m.referees && Array.isArray(m.referees)) {
+function renderToplist(area, matches) {
+    let counter = {};
+    matches.forEach(m => {
         m.referees.forEach(r => {
-          if (!r.name) return;
-          counter[r.name] = (counter[r.name] || 0) + 1;
+            if (r.name) counter[r.name] = (counter[r.name] || 0) + 1;
         });
+    });
+    
+    // Filter the ranking based on searchQuery if it exists
+    let ranking = Object.entries(counter).sort((a,b)=>b[1]-a[1]);
+    
+    if (state.searchQuery) {
+        ranking = ranking.filter(([name, count]) => name.toLowerCase().includes(state.searchQuery));
     }
-  });
 
-  let ranking = Object.entries(counter).sort((a,b)=>b[1]-a[1]);
-
-  let html = `
+    let html = `
     <div class="bg-dark-surface/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl animate-fade-in relative overflow-hidden">
-      <div class="absolute top-0 right-0 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-
-      <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/10 relative z-10">
-        <h2 class="text-2xl font-display font-black tracking-tight text-white flex items-center gap-3">
-          <span class="text-3xl">🏆</span> ${title}
-        </h2>
-        <span class="text-xs font-bold bg-white/10 px-3 py-1 rounded-full text-zinc-400">${ranking.length} domare</span>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 relative z-10">
-  `;
-
-  ranking.forEach(([name,count], i) => {
-    let rankColor = "text-zinc-600 font-mono text-sm";
-    let rowBg = "hover:bg-white/5";
-    let medal = "";
-    let countColor = "bg-zinc-800 text-zinc-400";
-    let nameClass = "text-zinc-300";
-
-    if (i===0) { 
-        rankColor = "text-yellow-400 font-black text-xl"; 
-        rowBg = "bg-gradient-to-r from-yellow-500/10 to-transparent border-l-2 border-yellow-500"; 
-        medal="🥇"; 
-        countColor="bg-yellow-500 text-black";
-        nameClass="text-yellow-100";
-    }
-    else if (i===1) { 
-        rankColor = "text-zinc-300 font-bold text-lg"; 
-        medal="🥈"; 
-        countColor="bg-zinc-200 text-black";
-        nameClass="text-white";
-    }
-    else if (i===2) { 
-        rankColor = "text-orange-400 font-bold text-lg"; 
-        medal="🥉"; 
-        countColor="bg-orange-900/50 text-orange-200 border border-orange-500/30";
-        nameClass="text-white";
-    }
-
-    html += `
-      <div class="flex justify-between items-center p-3 rounded-lg transition-all duration-200 ${rowBg} border-b border-white/5 last:border-0 group cursor-default">
-        <div class="flex items-center gap-4">
-          <span class="w-8 text-right ${rankColor}">${medal || i+1 + "."}</span>
-          <span class="font-bold ${nameClass} group-hover:text-violet-300 transition-colors">${name}</span>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+        <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/10 relative z-10">
+            <h2 class="text-2xl font-display font-black tracking-tight text-white flex items-center gap-3"><span class="text-3xl">🏆</span> Domarligan</h2>
+            <span class="text-xs font-bold bg-white/10 px-3 py-1 rounded-full text-zinc-400">${ranking.length} domare</span>
         </div>
-        <span class="${countColor} px-3 py-1 rounded-md text-xs font-black min-w-[3rem] text-center shadow-lg">${count}</span>
-      </div>
-    `;
-  });
-  html += "</div></div>";
-  area.innerHTML = html;
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 relative z-10">
+            ${ranking.map(([name, count], i) => {
+                let rankColor = "text-zinc-600 font-mono text-sm";
+                let rowBg = "hover:bg-white/5";
+                let medal = "";
+                let countColor = "bg-zinc-800 text-zinc-400";
+                let nameClass = "text-zinc-300";
+
+                if (i===0 && !state.searchQuery) { rankColor = "text-yellow-400 font-black text-xl"; rowBg = "bg-gradient-to-r from-yellow-500/10 to-transparent border-l-2 border-yellow-500"; medal="🥇"; countColor="bg-yellow-500 text-black"; nameClass="text-yellow-100"; }
+                else if (i===1 && !state.searchQuery) { rankColor = "text-zinc-300 font-bold text-lg"; medal="🥈"; countColor="bg-zinc-200 text-black"; nameClass="text-white"; }
+                else if (i===2 && !state.searchQuery) { rankColor = "text-orange-400 font-bold text-lg"; medal="🥉"; countColor="bg-orange-900/50 text-orange-200 border border-orange-500/30"; nameClass="text-white"; }
+
+                return `<div class="flex justify-between items-center p-3 rounded-lg transition-all duration-200 ${rowBg} border-b border-white/5 last:border-0 group cursor-default">
+                    <div class="flex items-center gap-4"><span class="w-8 text-right ${rankColor}">${medal || i+1 + "."}</span><span class="font-bold ${nameClass} group-hover:text-violet-300 transition-colors">${name}</span></div>
+                    <span class="${countColor} px-3 py-1 rounded-md text-xs font-black min-w-[3rem] text-center shadow-lg">${count}</span>
+                </div>`;
+            }).join('')}
+        </div>
+    </div>`;
+    area.innerHTML = html;
 }
 
-// ---------------------------------------------------------
-// RENDER: DOMARPROFIL
-// ---------------------------------------------------------
 function renderRefereeProfile(area, refName, matches) {
     let leagues = {};
     let colleagues = {};
-    
     matches.forEach(m => {
-        if(m.serie) leagues[m.serie] = (leagues[m.serie] || 0) + 1;
-        
-        if(m.referees) {
-            m.referees.forEach(r => {
-                if(r.name && r.name !== refName) {
-                    colleagues[r.name] = (colleagues[r.name] || 0) + 1;
-                }
-            });
-        }
+        leagues[m.serie] = (leagues[m.serie] || 0) + 1;
+        m.referees.forEach(r => { if(r.name !== refName) colleagues[r.name] = (colleagues[r.name] || 0) + 1; });
     });
-
     const sortedLeagues = Object.entries(leagues).sort((a,b) => b[1] - a[1]);
     const sortedColleagues = Object.entries(colleagues).sort((a,b) => b[1] - a[1]);
 
@@ -703,29 +535,18 @@ function renderRefereeProfile(area, refName, matches) {
                 </div>
             </div>
         </div>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-6">
                 <div class="bg-dark-surface border border-white/5 rounded-3xl p-6">
                     <h3 class="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4">Seriefördelning</h3>
                     <div class="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                        ${sortedLeagues.length ? sortedLeagues.map(([serie, count]) => `
-                            <div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0">
-                                <span class="text-zinc-300 truncate pr-4">${serie}</span>
-                                <span class="font-bold text-white bg-white/10 px-2 py-0.5 rounded">${count}</span>
-                            </div>
-                        `).join('') : '<p class="text-zinc-600 text-sm">Ingen data</p>'}
+                        ${sortedLeagues.map(([s,c]) => `<div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0"><span class="text-zinc-300 truncate pr-4">${s}</span><span class="font-bold text-white bg-white/10 px-2 py-0.5 rounded">${c}</span></div>`).join('')}
                     </div>
                 </div>
                 <div class="bg-dark-surface border border-white/5 rounded-3xl p-6">
                     <h3 class="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4">Kollegor</h3>
                     <div class="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                        ${sortedColleagues.length ? sortedColleagues.map(([name, count]) => `
-                            <div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0">
-                                <span class="text-zinc-300 truncate pr-4">${name}</span>
-                                <span class="font-bold text-white bg-white/10 px-2 py-0.5 rounded">${count}</span>
-                            </div>
-                        `).join('') : '<p class="text-zinc-600 text-sm">Inga kollegor registrerade</p>'}
+                        ${sortedColleagues.map(([n,c]) => `<div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0"><span class="text-zinc-300 truncate pr-4">${n}</span><span class="font-bold text-white bg-white/10 px-2 py-0.5 rounded">${c}</span></div>`).join('')}
                     </div>
                 </div>
             </div>
@@ -738,20 +559,9 @@ function renderRefereeProfile(area, refName, matches) {
     area.innerHTML = html;
 }
 
-// ---------------------------------------------------------
-// RENDER: SERIER
-// ---------------------------------------------------------
 function renderLeagueView(area, leagueName, matches) {
     let counter = {};
-    matches.forEach(m => {
-        if(m.referees) {
-            m.referees.forEach(r => {
-                if(!r.name) return;
-                counter[r.name] = (counter[r.name] || 0) + 1;
-            });
-        }
-    });
-    
+    matches.forEach(m => { m.referees.forEach(r => { if(r.name) counter[r.name] = (counter[r.name] || 0) + 1; }); });
     const sortedRefs = Object.entries(counter).sort((a,b) => b[1] - a[1]);
 
     let html = `
@@ -764,27 +574,13 @@ function renderLeagueView(area, leagueName, matches) {
             </div>
             <div class="flex-1 bg-white/5 border border-white/5 rounded-3xl p-6 flex flex-col justify-center">
                 <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Mest aktiva i serien</h3>
-                <div class="space-y-2">
-                    ${sortedRefs.slice(0,3).map(([name, count], i) => `
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-white font-bold"><span class="text-zinc-600 mr-2">#${i+1}</span> ${name}</span>
-                            <span class="text-brand-end font-bold">${count}</span>
-                        </div>
-                    `).join('')}
-                </div>
+                <div class="space-y-2">${sortedRefs.slice(0,3).map(([n,c], i) => `<div class="flex justify-between items-center text-sm"><span class="text-white font-bold"><span class="text-zinc-600 mr-2">#${i+1}</span> ${n}</span><span class="text-brand-end font-bold">${c}</span></div>`).join('')}</div>
             </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bg-dark-surface border border-white/5 rounded-3xl p-6">
                 <h3 class="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4">Domarstatistik (${leagueName})</h3>
-                <div class="space-y-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                    ${sortedRefs.map(([name, count], i) => `
-                        <div class="flex justify-between items-center p-3 rounded-xl hover:bg-white/5 transition border-b border-white/5 last:border-0">
-                            <span class="text-zinc-300 font-medium"><span class="inline-block w-6 text-zinc-600 text-xs">${i+1}.</span> ${name}</span>
-                            <span class="font-bold text-white bg-white/10 px-2 py-1 rounded text-xs">${count}</span>
-                        </div>
-                    `).join('')}
-                </div>
+                <div class="space-y-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">${sortedRefs.map(([n,c], i) => `<div class="flex justify-between items-center p-3 rounded-xl hover:bg-white/5 transition border-b border-white/5 last:border-0"><span class="text-zinc-300 font-medium"><span class="inline-block w-6 text-zinc-600 text-xs">${i+1}.</span> ${n}</span><span class="font-bold text-white bg-white/10 px-2 py-1 rounded text-xs">${c}</span></div>`).join('')}</div>
             </div>
             <div>
                 <h3 class="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4 ml-2">Matcher</h3>
@@ -795,52 +591,21 @@ function renderLeagueView(area, leagueName, matches) {
     area.innerHTML = html;
 }
 
-// ---------------------------------------------------------
-// HELPER: Generate Match Cards HTML
-// ---------------------------------------------------------
 function generateMatchCardsHtml(matches) {
     if(!matches || matches.length === 0) return '<p class="text-zinc-500">Inga matcher.</p>';
-
     return `<div class="space-y-4">` + matches.map(m => {
         const isFotboll = m.sport === "fotboll";
-        const accentClass = isFotboll ? "from-emerald-500/20 to-teal-500/5" : "from-blue-500/20 to-cyan-500/5";
         const badgeClass = isFotboll ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" : "text-blue-300 bg-blue-500/10 border-blue-500/20";
-
-        return `
-          <div class="group bg-dark-surface border border-white/5 rounded-2xl shadow-lg hover:border-white/10 transition-all duration-200 relative overflow-hidden">
+        const accentClass = isFotboll ? "from-emerald-500/20 to-teal-500/5" : "from-blue-500/20 to-cyan-500/5";
+        return `<div class="group bg-dark-surface border border-white/5 rounded-2xl shadow-lg hover:border-white/10 transition-all duration-200 relative overflow-hidden">
             <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b ${accentClass} opacity-30 pointer-events-none"></div>
-            
             <div class="relative z-10 p-5">
-                <div class="flex justify-between items-start mb-3">
-                    <span class="text-[9px] font-bold uppercase tracking-widest ${badgeClass} px-2 py-0.5 rounded border truncate max-w-[60%]">
-                        ${m.serie || 'Okänd serie'}
-                    </span>
-                    <span class="text-[10px] font-mono text-zinc-400">${m.date} ${m.time}</span>
-                </div>
-                
-                <div class="mb-4">
-                    <div class="text-base font-bold text-white leading-tight">${m.home || 'Hemmalag'}</div>
-                    <div class="text-[10px] font-bold text-zinc-600 uppercase my-0.5">VS</div>
-                    <div class="text-base font-medium text-zinc-400">${m.away || 'Bortalag'}</div>
-                </div>
-
-                <div class="border-t border-white/5 pt-3">
-                    <div class="space-y-1">
-                        ${(m.referees || []).map(r => r.name ? `
-                            <div class="text-xs font-medium flex items-center gap-2 text-zinc-300">
-                                <div class="w-1 h-1 rounded-full ${isFotboll ? 'bg-emerald-500' : 'bg-blue-500'}"></div>
-                                ${r.name}
-                            </div>` : '').join("")}
-                    </div>
-                </div>
-                
-                <div class="mt-3 flex items-center gap-1 text-[10px] text-zinc-600 truncate">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    ${m.hall || 'Okänd plats'}
-                </div>
+                <div class="flex justify-between items-start mb-3"><span class="text-[9px] font-bold uppercase tracking-widest ${badgeClass} px-2 py-0.5 rounded border truncate max-w-[60%]">${m.serie || 'Serie'}</span><span class="text-[10px] font-mono text-zinc-400">${m.date} ${m.time}</span></div>
+                <div class="mb-4"><div class="text-base font-bold text-white leading-tight">${m.home || 'Hemmalag'}</div><div class="text-[10px] font-bold text-zinc-600 uppercase my-0.5">VS</div><div class="text-base font-medium text-zinc-400">${m.away || 'Bortalag'}</div></div>
+                <div class="border-t border-white/5 pt-3"><div class="space-y-1">${(m.referees||[]).map(r => `<div class="text-xs font-medium flex items-center gap-2 text-zinc-300"><div class="w-1 h-1 rounded-full ${isFotboll?'bg-emerald-500':'bg-blue-500'}"></div>${r.name}</div>`).join('')}</div></div>
+                <div class="mt-3 flex items-center gap-1 text-[10px] text-zinc-600 truncate"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${m.hall || 'Plats'}</div>
             </div>
-          </div>
-        `;
+        </div>`;
     }).join("") + `</div>`;
 }
 </script>
