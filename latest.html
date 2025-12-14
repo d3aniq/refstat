@@ -642,14 +642,14 @@ function renderToplist(area, matches) {
                 let countColor = "bg-zinc-800 text-zinc-400";
                 let nameClass = "text-zinc-300";
 
-                if (i===0) { rankColor = "text-yellow-400 font-black text-lg"; rowBg = "bg-gradient-to-r from-yellow-500/10 to-transparent border-l-2 border-yellow-500"; medal="🥇"; countColor="bg-yellow-500 text-black"; nameClass="text-yellow-100"; }
-                else if (i===1) { rankColor = "text-zinc-300 font-bold text-base"; medal="🥈"; countColor="bg-zinc-200 text-black"; nameClass="text-white"; }
-                else if (i===2) { rankColor = "text-orange-400 font-bold text-base"; medal="🥉"; countColor="bg-orange-900/50 text-orange-200 border border-orange-500/30"; nameClass="text-white"; }
+                // if (i===0) { rankColor = "text-yellow-400 font-black text-lg"; rowBg = "bg-gradient-to-r from-yellow-500/10 to-transparent border-l-2 border-yellow-500"; medal="🥇"; countColor="bg-yellow-500 text-black"; nameClass="text-yellow-100"; }
+                // else if (i===1) { rankColor = "text-zinc-300 font-bold text-base"; medal="🥈"; countColor="bg-zinc-200 text-black"; nameClass="text-white"; }
+                // else if (i===2) { rankColor = "text-orange-400 font-bold text-base"; medal="🥉"; countColor="bg-orange-900/50 text-orange-200 border border-orange-500/30"; nameClass="text-white"; }
 
                 let breakdown = "";
-                if(data.fotboll > 0 && data.innebandy > 0) breakdown = `<span class="text-[10px] text-zinc-500 mr-2 opacity-75">(FOT ${data.fotboll} | INN ${data.innebandy})</span>`;
-                else if (data.fotboll > 0) breakdown = `<span class="text-[10px] text-zinc-500 mr-2 opacity-50">FOT</span>`;
-                else breakdown = `<span class="text-[10px] text-zinc-500 mr-2 opacity-50">INN</span>`;
+                if(data.fotboll > 0 && data.innebandy > 0) breakdown = `<span class="text-[10px] text-zinc-500 mr-2 opacity-75">(FTB ${data.fotboll} | INB ${data.innebandy})</span>`;
+                else if (data.fotboll > 0) breakdown = `<span class="text-[10px] text-zinc-500 mr-2 opacity-50">FTB</span>`;
+                else breakdown = `<span class="text-[10px] text-zinc-500 mr-2 opacity-50">INB</span>`;
 
                 return `<div class="flex justify-between items-center p-2.5 rounded-lg transition-all duration-200 ${rowBg} border-b border-white/5 last:border-0 group">
                     <div class="flex items-center gap-3"><span class="w-6 text-right ${rankColor}">${medal || i+1 + "."}</span><span onclick="goToReferee('${name}')" class="interactive-text font-bold text-sm ${nameClass} group-hover:text-brand-primary transition-colors">${name}</span></div>
