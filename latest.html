@@ -91,7 +91,7 @@
   <div class="max-w-[1400px] mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-      <aside class="lg:col-span-3 flex flex-col gap-6">
+      <aside class="lg:col-span-3 flex flex-col gap-6 relative z-50">
         
         <header class="flex flex-col items-center justify-center pt-2">
             <h1 class="font-display text-4xl tracking-tighter flex items-baseline gap-2">
@@ -157,9 +157,9 @@
           </div>
         </div>
 
-        <div id="navPanel" class="hidden grid-cols-3 gap-2 animate-fade-in">
+        <div id="navPanel" class="hidden grid-cols-3 gap-2 animate-fade-in relative z-50">
             
-            <button onclick="setMode('Topplista')" id="btn-Topplista" class="flex items-center justify-center px-2 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white">
+            <button onclick="resetToToplist()" id="btn-Topplista" class="flex items-center justify-center px-2 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white">
                 Översikt
             </button>
 
@@ -168,7 +168,7 @@
                     <span>Serier</span>
                     <svg class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
-                <div id="dropdown-Serier" class="hidden absolute left-0 right-0 top-full mt-2 bg-dark-card border border-white/10 rounded-lg p-2 z-50 shadow-2xl max-h-[300px] overflow-y-auto custom-scrollbar min-w-[200px]">
+                <div id="dropdown-Serier" class="hidden absolute left-0 top-full mt-2 bg-dark-card border border-white/10 rounded-lg p-2 z-[60] shadow-2xl max-h-[400px] overflow-y-auto custom-scrollbar min-w-[240px]">
                     </div>
             </div>
 
@@ -177,7 +177,7 @@
                     <span>Domare</span>
                     <svg class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
-                <div id="dropdown-Domare" class="hidden absolute right-0 top-full mt-2 bg-dark-card border border-white/10 rounded-lg p-2 z-50 shadow-2xl max-h-[300px] overflow-y-auto custom-scrollbar min-w-[200px]">
+                <div id="dropdown-Domare" class="hidden absolute right-0 top-full mt-2 bg-dark-card border border-white/10 rounded-lg p-2 z-[60] shadow-2xl max-h-[400px] overflow-y-auto custom-scrollbar min-w-[240px]">
                     </div>
             </div>
             
@@ -190,7 +190,7 @@
 
       </aside>
 
-      <main class="lg:col-span-9">
+      <main class="lg:col-span-9 z-0">
         <div id="resultArea" class="min-h-[500px]">
           <div class="h-full flex flex-col items-center justify-center py-32 opacity-30 bg-white/5 rounded-2xl border border-dashed border-white/10">
             <svg class="w-12 h-12 text-zinc-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
@@ -475,6 +475,14 @@ function pushHistoryState() {
     }, "", "");
 }
 
+function resetToToplist() {
+    state.mode = 'Topplista';
+    closeAllDropdowns();
+    pushHistoryState();
+    updateMenuUI('Topplista');
+    renderResults();
+}
+
 function goToReferee(name) {
     state.mode = 'Domare';
     state.selectedReferees = [name];
@@ -512,7 +520,7 @@ function goToSeries(name) {
 // =====================================================================
 function setMode(mode) {
     state.mode = mode;
-    closeAllDropdowns();
+    // Don't close dropdowns immediately here if triggered by dropdown itself
     pushHistoryState();
     updateMenuUI(mode);
     renderResults();
@@ -521,10 +529,12 @@ function setMode(mode) {
 function toggleDropdown(type) {
     const el = document.getElementById(`dropdown-${type}`);
     const isHidden = el.classList.contains('hidden');
-    closeAllDropdowns();
+    
+    closeAllDropdowns(); // Close others first
+    
     if(isHidden) {
         el.classList.remove('hidden');
-        setMode(type); // Switch mode to reflect what user is selecting
+        setMode(type); // Switch mode logic but keep dropdown open
     }
 }
 
