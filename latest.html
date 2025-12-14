@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DʒaniQ RefStat Pro</title>
+<title>DʒaniQ RefStat</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -188,9 +188,10 @@
         </div>
 
         <div id="navPanel" class="hidden grid-cols-3 gap-2 animate-fade-in">
-            
-            <button onclick="resetToToplist()" id="btn-Topplista" class="flex items-center justify-center px-2 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white">
-                Översikt
+
+            <button onclick="openModal('Domare')" id="btn-Domare" class="flex items-center justify-between px-3 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white group">
+                <span>Domare</span>
+                <svg class="w-3 h-3 opacity-50 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
 
             <button onclick="openModal('Serier')" id="btn-Serier" class="flex items-center justify-between px-3 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white group">
@@ -198,9 +199,8 @@
                 <svg class="w-3 h-3 opacity-50 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
 
-            <button onclick="openModal('Domare')" id="btn-Domare" class="flex items-center justify-between px-3 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white group">
-                <span>Domare</span>
-                <svg class="w-3 h-3 opacity-50 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            <button onclick="resetToToplist()" id="btn-Topplista" class="flex items-center justify-center px-2 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white">
+                Totalt
             </button>
             
         </div>
@@ -639,8 +639,8 @@ function updateSelectionCount() {
     const s = state.selectedSeries.length;
     const d = state.selectedReferees.length;
     let txt = "";
-    if (s > 0) txt += `${s} serier `;
     if (d > 0) txt += `${d} domare `;
+    if (s > 0) txt += `${s} serier `;
     
     const infoEl = document.getElementById("selectionInfo");
     if(txt) {
@@ -734,7 +734,7 @@ function renderLeagueComparison(area, allData) {
     const refCounts = {};
     selectedData.forEach(m => m.referees.forEach(r => { if(r.name) refCounts[r.name] = (refCounts[r.name]||0)+1; }));
     const sortedRefs = Object.entries(refCounts).sort((a,b) => b[1] - a[1]);
-    const title = state.selectedSeries.length > 1 ? "Översikt" : state.selectedSeries[0];
+    const title = state.selectedSeries.length > 1 ? "Sammanställning" : state.selectedSeries[0];
     const subTitle = state.selectedSeries.length > 1 ? `${state.selectedSeries.length} serier valda` : "1 serie vald";
 
     let html = `
@@ -751,7 +751,7 @@ function renderLeagueComparison(area, allData) {
             </div>
         </div>
         <div class="pt-6 border-t border-white/5">
-            <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 ml-1">Matchuppdrag</h3>
+            <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 ml-1">Matcher</h3>
             ${generateMatchCardsHtml(selectedData)}
         </div>
     </div>`;
@@ -782,7 +782,7 @@ function renderRefereeComparison(area, allData) {
                 </table>
             </div>
         </div>
-        <div><h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 ml-1">Matchuppdrag</h3>${generateMatchCardsHtml(selectedMatches)}</div>
+        <div><h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 ml-1">Matcher</h3>${generateMatchCardsHtml(selectedMatches)}</div>
     </div>`;
     area.innerHTML = html;
 }
