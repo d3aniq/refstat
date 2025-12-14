@@ -96,83 +96,77 @@
 </style>
 </head>
 
-<body class="p-4 md:p-10 antialiased selection:bg-brand-primary selection:text-white">
+<body class="p-4 md:p-8 antialiased selection:bg-brand-primary selection:text-white">
 
   <div class="glow-orb orb-1"></div>
   <div class="glow-orb orb-2"></div>
 
   <div class="max-w-[1400px] mx-auto relative">
     
-    <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between border-b border-white/5 pb-6 gap-4">
+    <header class="mb-8 flex flex-col md:flex-row md:items-end justify-between border-b border-white/5 pb-4 gap-4">
       <div class="animate-fade-in">
         <div class="flex items-center gap-3 mb-1">
-            <h1 class="font-display text-5xl md:text-6xl tracking-tighter flex items-baseline gap-3">
-                <span class="font-semibold text-zinc-600 text-3xl md:text-4xl">DʒaniQ</span>
+            <h1 class="font-display text-4xl md:text-5xl tracking-tighter flex items-baseline gap-2">
+                <span class="font-semibold text-zinc-600 text-2xl md:text-3xl">DʒaniQ</span>
                 <span class="font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-fuchsia-400 to-white drop-shadow-sm">RefStat</span>
             </h1>
         </div>
-        <div class="flex items-center justify-center md:justify-start gap-3 ml-1 mt-1">
-            <span class="relative flex h-2 w-2">
+        <div class="flex items-center justify-center md:justify-start gap-2 ml-1 mt-0.5">
+            <span class="relative flex h-1.5 w-1.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-primary opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-primary"></span>
+              <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-brand-primary"></span>
             </span>
-            <p class="text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-[0.35em] opacity-90">
+            <p class="text-[9px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-[0.25em] opacity-90">
                 Domare <span class="text-brand-primary">•</span> Data <span class="text-brand-primary">•</span> Insikt
             </p>
         </div>
       </div>
     </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
 
-      <aside class="lg:col-span-4 xl:col-span-3 space-y-8">
+      <aside class="lg:col-span-4 xl:col-span-3 space-y-6">
         
-        <div class="glass-card rounded-3xl p-6 relative overflow-hidden group">
+        <div class="glass-card rounded-2xl p-5 relative overflow-hidden group">
           <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-50"></div>
 
-          <div class="space-y-8">
+          <div class="space-y-6">
             
-            <div class="space-y-6">
+            <div class="space-y-4">
                 
-                <div class="bg-dark-surface/50 rounded-2xl p-4 border border-white/5">
-                    <div class="flex justify-between items-center mb-3">
-                        <label class="text-sm font-bold text-white flex items-center gap-2">
-                            <!-- <span class="text-lg">⚽️</span> -->Fotboll
+                <div class="bg-dark-surface/50 rounded-xl p-3 border border-white/5">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-white flex items-center gap-2 uppercase tracking-wide">
+                            Fotboll
                         </label>
-                        <label class="relative inline-flex items-center cursor-pointer">
+                        <label class="relative inline-flex items-center cursor-pointer scale-90 origin-right">
                             <input type="checkbox" id="switchFotboll" class="sr-only peer" onchange="toggleSport('fotboll')">
-                            <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                            <div class="w-9 h-5 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
                         </label>
                     </div>
                     
                     <div id="container-fotboll" class="section-disabled relative">
-                         <select id="selectFotboll" onchange="validateForm()" disabled class="w-full bg-dark-bg text-zinc-300 text-xs font-medium border border-white/10 rounded-lg px-3 py-3 outline-none focus:border-emerald-500/50 transition-all appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">
+                         <select id="selectFotboll" onchange="validateForm(); saveSettings();" disabled class="w-full bg-dark-bg text-zinc-300 text-[11px] font-medium border border-white/10 rounded px-2 py-2 outline-none focus:border-emerald-500/50 transition-all appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">
                             <option value="">Välj Förbund</option>
                          </select>
-                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500">
-                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
                     </div>
                 </div>
 
-                <div class="bg-dark-surface/50 rounded-2xl p-4 border border-white/5">
-                    <div class="flex justify-between items-center mb-3">
-                        <label class="text-sm font-bold text-white flex items-center gap-2">
-                            <!-- <span class="text-lg">🏑</span> -->Innebandy
+                <div class="bg-dark-surface/50 rounded-xl p-3 border border-white/5">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-white flex items-center gap-2 uppercase tracking-wide">
+                            Innebandy
                         </label>
-                        <label class="relative inline-flex items-center cursor-pointer">
+                        <label class="relative inline-flex items-center cursor-pointer scale-90 origin-right">
                             <input type="checkbox" id="switchInnebandy" class="sr-only peer" onchange="toggleSport('innebandy')">
-                            <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            <div class="w-9 h-5 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
                     </div>
                     
                     <div id="container-innebandy" class="section-disabled relative">
-                         <select id="selectInnebandy" onchange="validateForm()" disabled class="w-full bg-dark-bg text-zinc-300 text-xs font-medium border border-white/10 rounded-lg px-3 py-3 outline-none focus:border-blue-500/50 transition-all appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">
+                         <select id="selectInnebandy" onchange="validateForm(); saveSettings();" disabled class="w-full bg-dark-bg text-zinc-300 text-[11px] font-medium border border-white/10 rounded px-2 py-2 outline-none focus:border-blue-500/50 transition-all appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">
                             <option value="">Välj Förbund</option>
                          </select>
-                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500">
-                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
                     </div>
                 </div>
 
@@ -180,33 +174,32 @@
 
             <div class="h-px bg-white/5 w-full"></div>
 
-            <div id="step-dates" class="space-y-3">
-              <div class="flex justify-between items-end">
-                  <label class="block text-[11px] uppercase tracking-widest font-bold text-zinc-500 ml-1">Tidsperiod</label>
-                  <div class="flex gap-1.5">
-                      <button onclick="setQuickDate(7)" class="text-[10px] font-bold bg-white/5 hover:bg-white/10 border border-white/5 px-2.5 py-1 rounded-lg text-zinc-400 hover:text-white transition">7d</button>
-                      <button onclick="setQuickDate(30)" class="text-[10px] font-bold bg-white/5 hover:bg-white/10 border border-white/5 px-2.5 py-1 rounded-lg text-zinc-400 hover:text-white transition">30d</button>
-                      <button onclick="setQuickDate(365)" class="text-[10px] font-bold bg-white/5 hover:bg-white/10 border border-white/5 px-2.5 py-1 rounded-lg text-zinc-400 hover:text-white transition">1 år</button>
+            <div id="step-dates" class="section-disabled space-y-2">
+              <div class="flex justify-between items-center">
+                  <label class="block text-[10px] uppercase tracking-widest font-bold text-zinc-500">Tidsperiod</label>
+                  <div class="flex gap-1">
+                      <button onclick="setQuickDate(7)" class="text-[9px] font-bold bg-white/5 hover:bg-white/10 border border-white/5 px-2 py-0.5 rounded text-zinc-400 hover:text-white transition">7d</button>
+                      <button onclick="setQuickDate(30)" class="text-[9px] font-bold bg-white/5 hover:bg-white/10 border border-white/5 px-2 py-0.5 rounded text-zinc-400 hover:text-white transition">30d</button>
+                      <button onclick="setQuickDate(365)" class="text-[9px] font-bold bg-white/5 hover:bg-white/10 border border-white/5 px-2 py-0.5 rounded text-zinc-400 hover:text-white transition">1 år</button>
                   </div>
               </div>
-              <div class="grid grid-cols-2 gap-3">
-                <input id="dateFrom" type="date" onchange="validateForm()" class="w-full bg-dark-bg/50 text-zinc-200 text-sm font-medium border border-white/10 rounded-xl px-3 py-3.5 outline-none focus:border-brand-primary/50 transition-all hover:border-white/20 uppercase shadow-inner">
-                <input id="dateTo" type="date" onchange="validateForm()" class="w-full bg-dark-bg/50 text-zinc-200 text-sm font-medium border border-white/10 rounded-xl px-3 py-3.5 outline-none focus:border-brand-primary/50 transition-all hover:border-white/20 uppercase shadow-inner">
+              <div class="grid grid-cols-2 gap-2">
+                <input id="dateFrom" type="date" onchange="validateForm()" class="w-full bg-dark-bg/50 text-zinc-200 text-xs font-medium border border-white/10 rounded px-2 py-2.5 outline-none focus:border-brand-primary/50 transition-all hover:border-white/20 uppercase shadow-inner">
+                <input id="dateTo" type="date" onchange="validateForm()" class="w-full bg-dark-bg/50 text-zinc-200 text-xs font-medium border border-white/10 rounded px-2 py-2.5 outline-none focus:border-brand-primary/50 transition-all hover:border-white/20 uppercase shadow-inner">
               </div>
             </div>
 
-            <div class="pt-2">
-                <button id="btnLoad" onclick="loadData()" disabled class="relative w-full overflow-hidden group/btn rounded-2xl bg-dark-surface text-zinc-600 font-display font-black tracking-wide py-5 border border-white/5 transition-all duration-300 opacity-50 cursor-not-allowed shadow-lg">
-                  <span class="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
+            <div class="pt-1">
+                <button id="btnLoad" onclick="loadData()" disabled class="relative w-full overflow-hidden group/btn rounded-xl bg-zinc-800 text-zinc-500 font-display font-black tracking-wide py-3.5 border border-white/5 transition-all duration-300 opacity-50 cursor-not-allowed shadow-lg text-sm">
+                  <span class="relative z-10 flex items-center justify-center gap-2">
                     HÄMTA STATISTIK 
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                   </span>
                 </button>
             </div>
             
             <div id="loadingContainer" class="hidden animate-fade-in">
-              <div class="flex justify-between text-[10px] font-bold text-brand-primary mb-2 uppercase tracking-wider"><span>Bearbetar data</span><span id="loadingPercent" class="tabular-nums">0%</span></div>
-              <div class="relative w-full bg-white/5 rounded-full h-1.5 overflow-hidden"><div id="loadingBar" class="absolute left-0 top-0 h-full bg-gradient-to-r from-violet-600 to-fuchsia-500 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(139,92,246,0.6)]" style="width: 0%"></div></div>
+              <div class="flex justify-between text-[9px] font-bold text-brand-primary mb-1 uppercase tracking-wider"><span>Bearbetar data</span><span id="loadingPercent" class="tabular-nums">0%</span></div>
+              <div class="relative w-full bg-white/5 rounded-full h-1 overflow-hidden"><div id="loadingBar" class="absolute left-0 top-0 h-full bg-gradient-to-r from-violet-600 to-fuchsia-500 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(139,92,246,0.6)]" style="width: 0%"></div></div>
             </div>
 
           </div>
@@ -215,29 +208,24 @@
 
       <main class="lg:col-span-8 xl:col-span-9">
         
-        <div id="mainControls" class="hidden mb-8 p-1.5 bg-dark-surface/80 border border-white/10 rounded-2xl flex flex-col md:flex-row gap-2 shadow-2xl animate-fade-in items-stretch backdrop-blur-xl">
-            <button onclick="setMode('Översikt')" class="bg-white/5 hover:bg-white/10 text-brand-primary hover:text-white border border-white/5 rounded-xl px-6 py-3 flex items-center justify-center gap-2 transition-all font-display font-bold text-sm tracking-wide whitespace-nowrap flex-1 md:flex-none">
-                <!-- <span class="text-lg">🏆</span> -->Översikt
+        <div id="mainControls" class="hidden mb-6 p-1.5 bg-dark-surface/80 border border-white/10 rounded-xl flex flex-col md:flex-row gap-2 shadow-xl animate-fade-in items-stretch backdrop-blur-xl">
+            <button onclick="setMode('Topplista')" class="bg-white/5 hover:bg-white/10 text-brand-primary hover:text-white border border-white/5 rounded-lg px-5 py-2.5 flex items-center justify-center gap-2 transition-all font-display font-bold text-xs tracking-wide whitespace-nowrap flex-1 md:flex-none">
+                Översikt
             </button>
 
             <div class="relative flex-1">
-                <select id="serieSelect" onchange="handleSerieChange()" class="block w-full pl-5 pr-10 py-3.5 rounded-xl bg-dark-bg/50 border border-transparent text-zinc-300 focus:outline-none focus:bg-dark-bg focus:border-white/10 focus:text-white transition-all font-medium text-sm cursor-pointer appearance-none hover:bg-white/5 h-full"><option value="">Välj Serie</option></select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                <select id="serieSelect" onchange="handleSerieChange()" class="block w-full pl-3 pr-8 py-2.5 rounded-lg bg-dark-bg/50 border border-transparent text-zinc-300 focus:outline-none focus:bg-dark-bg focus:border-white/10 focus:text-white transition-all font-medium text-xs cursor-pointer appearance-none hover:bg-white/5 h-full"><option value="">Välj Serie</option></select>
             </div>
 
             <div class="relative flex-1">
-                <select id="domareSelect" onchange="handleDomareChange()" class="block w-full pl-5 pr-10 py-3.5 rounded-xl bg-dark-bg/50 border border-transparent text-zinc-300 focus:outline-none focus:bg-dark-bg focus:border-white/10 focus:text-white transition-all font-medium text-sm cursor-pointer appearance-none hover:bg-white/5 h-full"><option value="">Välj Domare</option></select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                <select id="domareSelect" onchange="handleDomareChange()" class="block w-full pl-3 pr-8 py-2.5 rounded-lg bg-dark-bg/50 border border-transparent text-zinc-300 focus:outline-none focus:bg-dark-bg focus:border-white/10 focus:text-white transition-all font-medium text-xs cursor-pointer appearance-none hover:bg-white/5 h-full"><option value="">Välj Domare</option></select>
             </div>
         </div>
 
         <div id="resultArea" class="space-y-4 min-h-[500px]">
-          <div class="h-full flex flex-col items-center justify-center py-32 opacity-40 bg-white/5 rounded-3xl border border-dashed border-white/10">
-            <div class="w-24 h-24 bg-gradient-to-tr from-violet-500/10 to-fuchsia-500/10 rounded-full flex items-center justify-center mb-6 ring-1 ring-white/5">
-              <svg class="w-10 h-10 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-            </div>
-            <p class="text-xl font-display font-bold text-zinc-300 mb-1">Statistikcenter</p>
-            <p class="text-sm text-zinc-500">Konfigurera sökningen till vänster.</p>
+          <div class="h-full flex flex-col items-center justify-center py-32 opacity-40 bg-white/5 rounded-2xl border border-dashed border-white/10">
+            <p class="text-lg font-display font-bold text-zinc-300 mb-1">Statistikcenter</p>
+            <p class="text-xs text-zinc-500">Konfigurera sökningen i menyn.</p>
           </div>
         </div>
       </main>
@@ -276,8 +264,51 @@ let state = {
   fotboll: [],
   innebandy: [],
   filtered: [],
-  mode: "Översikt"
+  mode: "Topplista"
 };
+
+// =====================================================================
+// LOCAL STORAGE LOGIC (NEW)
+// =====================================================================
+const STORAGE_KEY = 'refstat_config';
+
+function saveSettings() {
+    const settings = {
+        fotbollActive: document.getElementById('switchFotboll').checked,
+        fotbollFed: document.getElementById('selectFotboll').value,
+        innebandyActive: document.getElementById('switchInnebandy').checked,
+        innebandyFed: document.getElementById('selectInnebandy').value
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+}
+
+function loadSettings() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (!data) return;
+
+    const settings = JSON.parse(data);
+
+    // Apply Football settings
+    if (settings.fotbollActive) {
+        document.getElementById('switchFotboll').checked = true;
+        toggleSport('fotboll'); // This unlocks the select
+        if (settings.fotbollFed) {
+            document.getElementById('selectFotboll').value = settings.fotbollFed;
+        }
+    }
+
+    // Apply Floorball settings
+    if (settings.innebandyActive) {
+        document.getElementById('switchInnebandy').checked = true;
+        toggleSport('innebandy'); // This unlocks the select
+        if (settings.innebandyFed) {
+            document.getElementById('selectInnebandy').value = settings.innebandyFed;
+        }
+    }
+    
+    // Re-run validation to unlock date picker if everything is set
+    validateForm();
+}
 
 // =====================================================================
 // INIT & TOGGLES
@@ -292,7 +323,11 @@ function initDropdowns() {
     INNEBANDY_FED.forEach(f => {
         const opt = document.createElement("option"); opt.value = f.id; opt.textContent = f.name; sI.appendChild(opt);
     });
+    
+    // Load settings after dropdowns are populated
+    loadSettings();
 }
+// Run init
 initDropdowns();
 
 function toggleSport(sport) {
@@ -304,14 +339,14 @@ function toggleSport(sport) {
     if (state.active[sport]) {
         container.classList.remove('section-disabled');
         container.classList.add('section-active');
-        select.disabled = false; // Enable select
+        select.disabled = false;
     } else {
         container.classList.add('section-disabled');
         container.classList.remove('section-active');
-        select.disabled = true; // Disable select
-        // select.value = ""; // Optional: Clear value
+        select.disabled = true;
     }
     validateForm();
+    saveSettings(); // Save state on toggle
 }
 
 function setQuickDate(days) {
@@ -335,32 +370,37 @@ function validateForm() {
     const fotFed = document.getElementById("selectFotboll").value;
     const innFed = document.getElementById("selectInnebandy").value;
 
+    const dateContainer = document.getElementById("step-dates");
     const btn = document.getElementById("btnLoad");
 
-    let isValid = false;
+    let isSportValid = false;
+    if (fotOn && fotFed) isSportValid = true;
+    if (innOn && innFed) isSportValid = true;
+    if (fotOn && !fotFed) isSportValid = false;
+    if (innOn && !innFed) isSportValid = false;
+    if (!fotOn && !innOn) isSportValid = false;
 
-    // Must have dates + at least one sport active + active sports must have fed selected
-    if (from && to && (fotOn || innOn)) {
-        // Date Check
-        if (new Date(from) <= new Date(to)) {
-             // Logic Check
-             const fotValid = !fotOn || (fotOn && fotFed);
-             const innValid = !innOn || (innOn && innFed);
-             
-             if (fotValid && innValid) {
-                 isValid = true;
-             }
-        }
+    if (isSportValid) {
+        dateContainer.classList.remove("section-disabled");
+        dateContainer.classList.add("section-active");
+    } else {
+        dateContainer.classList.add("section-disabled");
+        dateContainer.classList.remove("section-active");
     }
 
-    if (isValid) {
+    let isDateValid = false;
+    if (from && to && (new Date(from) <= new Date(to))) {
+        isDateValid = true;
+    }
+
+    if (isSportValid && isDateValid) {
         btn.disabled = false;
-        btn.classList.remove("opacity-50", "cursor-not-allowed", "bg-dark-surface", "text-zinc-600");
+        btn.classList.remove("opacity-50", "cursor-not-allowed", "bg-zinc-800", "text-zinc-500");
         btn.classList.add("bg-white", "text-black", "shadow-[0_0_20px_rgba(255,255,255,0.2)]", "animate-pulse-glow");
-        btn.innerHTML = `<span class="relative z-10 flex items-center justify-center gap-2">HÄMTA STATISTIK <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>`;
+        btn.innerHTML = `<span class="relative z-10 flex items-center justify-center gap-2">HÄMTA STATISTIK</span>`;
     } else {
         btn.disabled = true;
-        btn.classList.add("opacity-50", "cursor-not-allowed", "bg-dark-surface", "text-zinc-600");
+        btn.classList.add("opacity-50", "cursor-not-allowed", "bg-zinc-800", "text-zinc-500");
         btn.classList.remove("bg-white", "text-black", "shadow-[0_0_20px_rgba(255,255,255,0.2)]", "animate-pulse-glow");
     }
 }
@@ -375,7 +415,7 @@ async function loadData() {
     const lp = document.getElementById("loadingPercent");
 
     // UI Reset
-    btn.innerHTML = `<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5 text-zinc-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> HÄMTAR...</span>`;
+    btn.innerHTML = `<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-4 w-4 text-zinc-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> HÄMTAR...</span>`;
     btn.classList.remove("bg-white", "text-black", "animate-pulse-glow");
     btn.classList.add("bg-zinc-800", "text-zinc-500");
     lc.classList.remove("hidden");
@@ -390,14 +430,12 @@ async function loadData() {
         const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
         let processedDays = 0;
 
-        // Fetch IDs
         const fotFedId = document.getElementById("selectFotboll").value;
         const innFedId = document.getElementById("selectInnebandy").value;
 
         for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
             const iso = d.toISOString().slice(0,10);
             
-            // Parallel Fetch if both selected
             const promises = [];
             if (state.active.fotboll) promises.push(fetchFotboll(iso, fotFedId).then(res => state.fotboll.push(...res)));
             if (state.active.innebandy) promises.push(fetchInnebandy(iso, innFedId).then(res => state.innebandy.push(...res)));
@@ -410,14 +448,14 @@ async function loadData() {
         }
 
         populateLists();
-        setMode("Översikt");
+        setMode("Topplista");
         document.getElementById("mainControls").classList.remove("hidden");
         document.getElementById("mainControls").classList.add("flex");
 
     } catch (error) {
         document.getElementById("resultArea").innerHTML = `<div class="bg-red-900/20 border border-red-500/50 p-6 rounded-2xl text-center text-red-200">Fel vid laddning.</div>`;
     } finally {
-        btn.innerHTML = `<span class="relative z-10 flex items-center justify-center gap-2">STATISTIK LADDAD <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></span>`;
+        btn.innerHTML = `<span class="relative z-10 flex items-center justify-center gap-2">STATISTIK LADDAD</span>`;
         setTimeout(() => { lc.classList.add("hidden"); }, 500);
     }
 }
@@ -469,7 +507,7 @@ async function fetchInnebandy(date, fed) {
 // =====================================================================
 function setMode(m) {
     state.mode = m;
-    if(m === "Översikt") {
+    if(m === "Topplista") {
         document.getElementById("serieSelect").value = "";
         document.getElementById("domareSelect").value = "";
         filterData();
@@ -526,7 +564,6 @@ function populateLists() {
     if(currentDom) domSel.value = currentDom;
 }
 
-// Navigation Helpers
 function goToReferee(name) {
     if (!name) return;
     const domSelect = document.getElementById("domareSelect");
@@ -554,11 +591,10 @@ function renderResults() {
         return;
     }
 
-    if (state.mode === "Översikt") {
+    if (state.mode === "Topplista") {
         renderToplist(area, allData);
     } 
     else {
-        // Sortera kronologiskt för Serie & Domar-vy
         const sortedList = state.filtered.sort((a,b) => {
             const dateA = new Date(a.date + 'T' + a.time);
             const dateB = new Date(b.date + 'T' + b.time);
@@ -592,37 +628,32 @@ function renderToplist(area, matches) {
     let ranking = Object.entries(counter).sort((a,b)=>b[1].total - a[1].total);
 
     let html = `
-    <div class="glass-card rounded-3xl p-8 animate-fade-in relative overflow-hidden">
+    <div class="glass-card rounded-2xl p-6 animate-fade-in relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-brand-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-        <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/10 relative z-10">
-            <h2 class="text-2xl font-display font-black tracking-tight text-white flex items-center gap-3"><!--<span class="text-3xl">🏆</span>--> Mest aktiva domare</h2>
+        <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/10 relative z-10">
+            <h2 class="text-xl font-display font-black tracking-tight text-white flex items-center gap-3">Mest aktiva domare</h2>
             <span class="text-xs font-bold bg-white/10 px-3 py-1.5 rounded-full text-zinc-400 tabular-nums">${ranking.length} domare</span>
         </div>
-        <div class="grid grid-cols-1 gap-3 relative z-10">
+        <div class="grid grid-cols-1 gap-2 relative z-10">
             ${ranking.map(([name, data], i) => {
-                let rankColor = "text-zinc-600 font-mono text-sm";
+                let rankColor = "text-zinc-600 font-mono text-xs";
                 let rowBg = "hover:bg-white/5";
                 let medal = "";
                 let countColor = "bg-zinc-800 text-zinc-400";
                 let nameClass = "text-zinc-300";
 
-                // if (i===0) { rankColor = "text-yellow-400 font-black text-xl"; rowBg = "bg-gradient-to-r from-yellow-500/10 to-transparent border-l-2 border-yellow-500"; medal="🥇"; countColor="bg-yellow-500 text-black"; nameClass="text-yellow-100"; }
-                // else if (i===1) { rankColor = "text-zinc-300 font-bold text-lg"; medal="🥈"; countColor="bg-zinc-200 text-black"; nameClass="text-white"; }
-                // else if (i===2) { rankColor = "text-orange-400 font-bold text-lg"; medal="🥉"; countColor="bg-orange-900/50 text-orange-200 border border-orange-500/30"; nameClass="text-white"; }
+                if (i===0) { rankColor = "text-yellow-400 font-black text-lg"; rowBg = "bg-gradient-to-r from-yellow-500/10 to-transparent border-l-2 border-yellow-500"; medal="🥇"; countColor="bg-yellow-500 text-black"; nameClass="text-yellow-100"; }
+                else if (i===1) { rankColor = "text-zinc-300 font-bold text-base"; medal="🥈"; countColor="bg-zinc-200 text-black"; nameClass="text-white"; }
+                else if (i===2) { rankColor = "text-orange-400 font-bold text-base"; medal="🥉"; countColor="bg-orange-900/50 text-orange-200 border border-orange-500/30"; nameClass="text-white"; }
 
-                return `<div class="flex justify-between items-center p-3 rounded-lg transition-all duration-200 ${rowBg} border-b border-white/5 last:border-0 group">
-                    <div class="flex items-center gap-4"><span class="w-8 text-right ${rankColor}">${medal || i+1 + "."}</span><span onclick="goToReferee('${name}')" class="interactive-text font-bold ${nameClass} group-hover:text-brand-primary transition-colors">${name}</span></div>
-                    <div class="flex items-center gap-4">
-                        <div class="flex gap-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-                            <span class="${data.fotboll > 0 ? 'text-zinc-300' : 'opacity-30'}">Fotboll ${data.fotboll}</span>
-                            <span class="w-px h-3 bg-zinc-700"></span>
-                            <span class="${data.innebandy > 0 ? 'text-zinc-300' : 'opacity-30'}">Innebandy ${data.innebandy}</span>
-                        </div>
-                        <div class="flex flex-col items-center min-w-[3rem]">
-                            <span class="text-[9px] text-zinc-500 uppercase tracking-wider font-bold mb-0.5">Totalt</span>
-                            <span class="${countColor} px-2 py-0.5 rounded text-sm font-black shadow-lg tabular-nums w-full text-center">${data.total}</span>
-                        </div>
-                    </div>
+                let breakdown = "";
+                if(data.fotboll > 0 && data.innebandy > 0) breakdown = `<span class="text-[10px] text-zinc-500 mr-2 opacity-75">(FOT ${data.fotboll} | INN ${data.innebandy})</span>`;
+                else if (data.fotboll > 0) breakdown = `<span class="text-[10px] text-zinc-500 mr-2 opacity-50">FOT</span>`;
+                else breakdown = `<span class="text-[10px] text-zinc-500 mr-2 opacity-50">INN</span>`;
+
+                return `<div class="flex justify-between items-center p-2.5 rounded-lg transition-all duration-200 ${rowBg} border-b border-white/5 last:border-0 group">
+                    <div class="flex items-center gap-3"><span class="w-6 text-right ${rankColor}">${medal || i+1 + "."}</span><span onclick="goToReferee('${name}')" class="interactive-text font-bold text-sm ${nameClass} group-hover:text-brand-primary transition-colors">${name}</span></div>
+                    <div class="flex items-center">${breakdown}<span class="${countColor} px-2 py-0.5 rounded text-xs font-black min-w-[2.5rem] text-center shadow-lg tabular-nums">${data.total}</span></div>
                 </div>`;
             }).join('')}
         </div>
@@ -642,33 +673,33 @@ function renderRefereeProfile(area, refName, matches) {
 
     let html = `
     <div class="space-y-6 animate-fade-in">
-        <div class="glass-card rounded-3xl p-8 relative overflow-hidden">
+        <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-96 h-96 bg-brand-primary/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
             <div class="relative z-10">
-                <h2 class="text-3xl font-display font-black text-white mb-2">${refName}</h2>
-                <div class="flex gap-4">
-                    <span class="px-3 py-1 bg-white/10 rounded-lg text-sm font-bold text-zinc-300 tabular-nums">${matches.length} matcher totalt</span>
-                    <span class="px-3 py-1 bg-brand-primary/20 rounded-lg text-sm font-bold text-brand-accent tabular-nums">${sortedLeagues.length} olika serier</span>
+                <h2 class="text-2xl font-display font-black text-white mb-2">${refName}</h2>
+                <div class="flex gap-3">
+                    <span class="px-3 py-1 bg-white/10 rounded-lg text-xs font-bold text-zinc-300 tabular-nums">${matches.length} matcher totalt</span>
+                    <span class="px-3 py-1 bg-brand-primary/20 rounded-lg text-xs font-bold text-brand-accent tabular-nums">${sortedLeagues.length} olika serier</span>
                 </div>
             </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-6">
-                <div class="bg-dark-surface border border-white/5 rounded-3xl p-6 shadow-lg">
-                    <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Seriefördelning</h3>
+                <div class="bg-dark-surface border border-white/5 rounded-2xl p-5 shadow-lg">
+                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">Seriefördelning</h3>
                     <div class="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                        ${sortedLeagues.map(([s,c]) => `<div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0"><span onclick="goToSeries('${s}')" class="interactive-text text-zinc-300 truncate pr-4 hover:text-white">${s}</span><span class="font-bold text-white bg-white/10 px-2 py-0.5 rounded tabular-nums">${c}</span></div>`).join('')}
+                        ${sortedLeagues.map(([s,c]) => `<div class="flex justify-between items-center text-xs py-1.5 border-b border-white/5 last:border-0"><span onclick="goToSeries('${s}')" class="interactive-text text-zinc-300 truncate pr-4 hover:text-white">${s}</span><span class="font-bold text-white bg-white/10 px-2 py-0.5 rounded tabular-nums">${c}</span></div>`).join('')}
                     </div>
                 </div>
-                <div class="bg-dark-surface border border-white/5 rounded-3xl p-6 shadow-lg">
-                    <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Kollegor</h3>
+                <div class="bg-dark-surface border border-white/5 rounded-2xl p-5 shadow-lg">
+                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">Kollegor</h3>
                     <div class="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                        ${sortedColleagues.map(([n,c]) => `<div class="flex justify-between items-center text-sm py-2 border-b border-white/5 last:border-0"><span onclick="goToReferee('${n}')" class="interactive-text text-zinc-300 truncate pr-4 hover:text-white">${n}</span><span class="font-bold text-white bg-white/10 px-2 py-0.5 rounded tabular-nums">${c}</span></div>`).join('')}
+                        ${sortedColleagues.map(([n,c]) => `<div class="flex justify-between items-center text-xs py-1.5 border-b border-white/5 last:border-0"><span onclick="goToReferee('${n}')" class="interactive-text text-zinc-300 truncate pr-4 hover:text-white">${n}</span><span class="font-bold text-white bg-white/10 px-2 py-0.5 rounded tabular-nums">${c}</span></div>`).join('')}
                     </div>
                 </div>
             </div>
             <div>
-               <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 ml-2">Matchhistorik (Datumordning)</h3> 
+               <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3 ml-1">Matchhistorik (Datumordning)</h3> 
                ${generateMatchCardsHtml(matches)}
             </div>
         </div>
@@ -684,23 +715,23 @@ function renderLeagueView(area, leagueName, matches) {
     let html = `
     <div class="space-y-8 animate-fade-in">
         <div class="flex flex-col md:flex-row gap-6">
-            <div class="flex-1 glass-card rounded-3xl p-8 relative overflow-hidden">
+            <div class="flex-1 glass-card rounded-2xl p-6 relative overflow-hidden">
                  <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-primary to-brand-accent"></div>
                  <h2 class="text-2xl font-display font-black text-white mb-2">${leagueName}</h2>
-                 <p class="text-zinc-400 font-medium tabular-nums">${matches.length} matcher registrerade</p>
+                 <p class="text-zinc-400 font-medium tabular-nums text-sm">${matches.length} matcher registrerade</p>
             </div>
-            <div class="flex-1 bg-dark-surface border border-white/5 rounded-3xl p-6 flex flex-col justify-center shadow-lg">
-                <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Mest aktiva i serien</h3>
-                <div class="space-y-2">${sortedRefs.slice(0,3).map(([n,c], i) => `<div class="flex justify-between items-center text-sm"><span onclick="goToReferee('${n}')" class="interactive-text text-white font-bold hover:text-brand-primary"><span class="text-zinc-600 mr-2">#${i+1}</span> ${n}</span><span class="text-brand-accent font-bold tabular-nums">${c}</span></div>`).join('')}</div>
+            <div class="flex-1 bg-dark-surface border border-white/5 rounded-2xl p-5 flex flex-col justify-center shadow-lg">
+                <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">Mest aktiva i serien</h3>
+                <div class="space-y-2">${sortedRefs.slice(0,3).map(([n,c], i) => `<div class="flex justify-between items-center text-xs"><span onclick="goToReferee('${n}')" class="interactive-text text-white font-bold hover:text-brand-primary"><span class="text-zinc-600 mr-2">#${i+1}</span> ${n}</span><span class="text-brand-accent font-bold tabular-nums">${c}</span></div>`).join('')}</div>
             </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bg-dark-surface border border-white/5 rounded-3xl p-6 shadow-lg">
-                <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Domarstatistik (${leagueName})</h3>
-                <div class="space-y-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">${sortedRefs.map(([n,c], i) => `<div class="flex justify-between items-center p-3 rounded-xl hover:bg-white/5 transition border-b border-white/5 last:border-0"><span onclick="goToReferee('${n}')" class="interactive-text text-zinc-300 font-medium hover:text-white"><span class="inline-block w-6 text-zinc-600 text-xs">${i+1}.</span> ${n}</span><span class="font-bold text-white bg-white/10 px-2 py-1 rounded text-xs tabular-nums">${c}</span></div>`).join('')}</div>
+            <div class="bg-dark-surface border border-white/5 rounded-2xl p-5 shadow-lg">
+                <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">Domarstatistik (${leagueName})</h3>
+                <div class="space-y-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">${sortedRefs.map(([n,c], i) => `<div class="flex justify-between items-center p-2 rounded-lg hover:bg-white/5 transition border-b border-white/5 last:border-0"><span onclick="goToReferee('${n}')" class="interactive-text text-zinc-300 font-medium hover:text-white text-xs"><span class="inline-block w-6 text-zinc-600">${i+1}.</span> ${n}</span><span class="font-bold text-white bg-white/10 px-2 py-0.5 rounded text-xs tabular-nums">${c}</span></div>`).join('')}</div>
             </div>
             <div>
-                <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 ml-2">Matcher (Datumordning)</h3>
+                <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3 ml-1">Matcher (Datumordning)</h3>
                 ${generateMatchCardsHtml(matches)}
             </div>
         </div>
@@ -709,18 +740,18 @@ function renderLeagueView(area, leagueName, matches) {
 }
 
 function generateMatchCardsHtml(matches) {
-    if(!matches || matches.length === 0) return '<p class="text-zinc-500">Inga matcher.</p>';
-    return `<div class="space-y-4">` + matches.map(m => {
+    if(!matches || matches.length === 0) return '<p class="text-zinc-500 text-sm">Inga matcher.</p>';
+    return `<div class="space-y-3">` + matches.map(m => {
         const isFotboll = m.sport === "fotboll";
         const badgeClass = isFotboll ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" : "text-blue-300 bg-blue-500/10 border-blue-500/20";
         const accentClass = isFotboll ? "from-emerald-500/20 to-teal-500/5" : "from-blue-500/20 to-cyan-500/5";
-        return `<div class="group bg-dark-surface border border-white/5 rounded-2xl shadow-lg hover:border-white/10 transition-all duration-200 relative overflow-hidden">
+        return `<div class="group bg-dark-surface border border-white/5 rounded-xl shadow-lg hover:border-white/10 transition-all duration-200 relative overflow-hidden">
             <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b ${accentClass} opacity-20 pointer-events-none"></div>
-            <div class="relative z-10 p-5">
-                <div class="flex justify-between items-start mb-3"><span onclick="goToSeries('${m.serie}')" class="interactive-text text-[10px] font-bold uppercase tracking-widest ${badgeClass} px-2.5 py-1 rounded-md border truncate max-w-[60%]">${m.serie || 'Serie'}</span><span class="text-[11px] font-mono text-zinc-400 tabular-nums">${m.date} ${m.time}</span></div>
-                <div class="mb-4"><div class="text-base font-medium text-zinc-300">${m.home || 'Hemmalag'}</div><div class="text-[10px] font-bold text-zinc-600 uppercase my-0.5 ml-0.5">VS</div><div class="text-base font-medium text-zinc-300">${m.away || 'Bortalag'}</div></div>
-                <div class="border-t border-white/5 pt-3"><div class="space-y-1.5">${(m.referees||[]).map(r => `<div class="text-xs font-medium flex items-center gap-2 text-zinc-300"><div class="w-1.5 h-1.5 rounded-full ${isFotboll?'bg-emerald-500':'bg-blue-500'}"></div><span onclick="goToReferee('${r.name}')" class="interactive-text hover:text-white transition-colors">${r.name}</span></div>`).join('')}</div></div>
-                <div class="mt-4 flex items-center gap-1.5 text-[11px] text-zinc-500 font-semibold truncate"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${m.hall || 'Plats'}</div>
+            <div class="relative z-10 p-4">
+                <div class="flex justify-between items-start mb-2"><span onclick="goToSeries('${m.serie}')" class="interactive-text text-[9px] font-bold uppercase tracking-widest ${badgeClass} px-2 py-0.5 rounded border truncate max-w-[60%]">${m.serie || 'Serie'}</span><span class="text-[10px] font-mono text-zinc-400 tabular-nums">${m.date} ${m.time}</span></div>
+                <div class="mb-3"><div class="text-sm font-medium text-zinc-300">${m.home || 'Hemmalag'}</div><div class="text-[9px] font-bold text-zinc-600 uppercase my-0.5 ml-0.5">VS</div><div class="text-sm font-medium text-zinc-300">${m.away || 'Bortalag'}</div></div>
+                <div class="border-t border-white/5 pt-2"><div class="space-y-1">${(m.referees||[]).map(r => `<div class="text-[10px] font-medium flex items-center gap-2 text-zinc-300"><div class="w-1 h-1 rounded-full ${isFotboll?'bg-emerald-500':'bg-blue-500'}"></div><span onclick="goToReferee('${r.name}')" class="interactive-text hover:text-white transition-colors">${r.name}</span></div>`).join('')}</div></div>
+                <div class="mt-3 flex items-center gap-1.5 text-[9px] text-zinc-500 font-semibold truncate"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${m.hall || 'Plats'}</div>
             </div>
         </div>`;
     }).join("") + `</div>`;
