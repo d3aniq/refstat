@@ -78,11 +78,6 @@
       border-color: rgba(139, 92, 246, 0.5);
       color: white;
   }
-  .checkbox-wrapper input:checked + div .check-icon {
-      opacity: 1;
-      transform: scale(1);
-  }
-
   .interactive-text { transition: color 0.2s; cursor: pointer; }
   .interactive-text:hover { color: #fff; text-decoration: underline; text-decoration-color: #8b5cf6; text-underline-offset: 4px; }
 </style>
@@ -152,38 +147,45 @@
             </button>
             
             <div id="loadingContainer" class="hidden animate-fade-in mt-2">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-[9px] font-bold text-zinc-500 uppercase">Bearbetar</span>
+                    <span id="loadingPercent" class="text-[9px] font-bold text-brand-primary tabular-nums">0%</span>
+                </div>
               <div class="relative w-full bg-white/5 rounded-full h-1 overflow-hidden"><div id="loadingBar" class="absolute left-0 top-0 h-full bg-brand-primary rounded-full transition-all duration-300" style="width: 0%"></div></div>
             </div>
 
           </div>
         </div>
 
-        <div id="navPanel" class="hidden flex-col gap-2 animate-fade-in">
+        <div id="navPanel" class="hidden grid-cols-3 gap-2 animate-fade-in">
             
-            <button onclick="setMode('Topplista')" id="btn-Topplista" class="w-full text-left px-4 py-3 rounded-xl bg-dark-surface border border-white/5 hover:bg-white/5 transition-all flex items-center justify-between group">
-                <span class="font-display font-bold text-sm text-zinc-300 group-hover:text-white">Översikt</span>
-                <svg class="w-4 h-4 text-zinc-600 group-hover:text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            <button onclick="setMode('Topplista')" id="btn-Topplista" class="flex items-center justify-center px-2 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white">
+                Översikt
             </button>
 
-            <div class="rounded-xl bg-dark-surface border border-white/5 overflow-hidden">
-                <button onclick="setMode('Serier')" id="btn-Serier" class="w-full text-left px-4 py-3 hover:bg-white/5 transition-all flex items-center justify-between group border-b border-transparent">
-                    <span class="font-display font-bold text-sm text-zinc-300 group-hover:text-white">Serier</span>
-                    <svg id="icon-Serier" class="w-4 h-4 text-zinc-600 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            <div class="relative">
+                <button onclick="toggleDropdown('Serier')" id="btn-Serier" class="w-full flex items-center justify-between px-2 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white">
+                    <span>Serier</span>
+                    <svg class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
-                <div id="content-Serier" class="hidden bg-black/20 p-2 border-t border-white/5 max-h-[400px] overflow-y-auto custom-scrollbar">
+                <div id="dropdown-Serier" class="hidden absolute left-0 right-0 top-full mt-2 bg-dark-card border border-white/10 rounded-lg p-2 z-50 shadow-2xl max-h-[300px] overflow-y-auto custom-scrollbar min-w-[200px]">
                     </div>
             </div>
 
-            <div class="rounded-xl bg-dark-surface border border-white/5 overflow-hidden">
-                <button onclick="setMode('Domare')" id="btn-Domare" class="w-full text-left px-4 py-3 hover:bg-white/5 transition-all flex items-center justify-between group border-b border-transparent">
-                    <span class="font-display font-bold text-sm text-zinc-300 group-hover:text-white">Domare</span>
-                    <svg id="icon-Domare" class="w-4 h-4 text-zinc-600 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            <div class="relative">
+                <button onclick="toggleDropdown('Domare')" id="btn-Domare" class="w-full flex items-center justify-between px-2 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white">
+                    <span>Domare</span>
+                    <svg class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
-                <div id="content-Domare" class="hidden bg-black/20 p-2 border-t border-white/5 max-h-[400px] overflow-y-auto custom-scrollbar">
+                <div id="dropdown-Domare" class="hidden absolute right-0 top-full mt-2 bg-dark-card border border-white/10 rounded-lg p-2 z-50 shadow-2xl max-h-[300px] overflow-y-auto custom-scrollbar min-w-[200px]">
                     </div>
             </div>
             
-            <div class="text-[10px] text-center text-zinc-600 pt-2" id="selectionCount"></div>
+        </div>
+        
+        <div id="selectionInfo" class="hidden text-[10px] text-center text-zinc-500 animate-fade-in">
+             <span id="selectionCount"></span>
+             <button onclick="clearSelection()" class="ml-2 text-brand-primary underline">Rensa</button>
         </div>
 
       </aside>
@@ -193,7 +195,7 @@
           <div class="h-full flex flex-col items-center justify-center py-32 opacity-30 bg-white/5 rounded-2xl border border-dashed border-white/10">
             <svg class="w-12 h-12 text-zinc-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             <p class="text-sm font-display font-bold text-zinc-300">Statistikcenter</p>
-            <p class="text-xs text-zinc-500 mt-1">Ställ in parametrar till vänster för att starta.</p>
+            <p class="text-xs text-zinc-500 mt-1">Ställ in parametrar för att starta.</p>
           </div>
         </div>
       </main>
@@ -239,7 +241,7 @@ let state = {
 // =====================================================================
 // PERSISTENCE & INIT
 // =====================================================================
-const STORAGE_KEY = 'refstat_pro_config_v2';
+const STORAGE_KEY = 'refstat_pro_config_v3';
 
 function saveSettings() {
     const settings = {
@@ -258,25 +260,21 @@ function loadSettings() {
     try {
         const settings = JSON.parse(data);
         
-        // Load Football
         if (settings.fotbollActive) {
             document.getElementById('switchFotboll').checked = true;
             document.getElementById('selectFotboll').disabled = false;
-            // Set value specifically after enabling
             if(settings.fotbollFed) document.getElementById('selectFotboll').value = settings.fotbollFed;
             state.active.fotboll = true;
         }
 
-        // Load Floorball - EXPLICIT HANDLING FOR PERSISTENCE
         if (settings.innebandyActive) {
             document.getElementById('switchInnebandy').checked = true;
             document.getElementById('selectInnebandy').disabled = false;
-            // Set value specifically after enabling
             if(settings.innebandyFed) document.getElementById('selectInnebandy').value = settings.innebandyFed;
             state.active.innebandy = true;
         }
 
-        validateForm(); // Update UI/Button state without saving again
+        validateForm(); 
     } catch(e) {
         console.error("Error loading settings", e);
     }
@@ -288,7 +286,6 @@ function initDropdowns() {
     FOTBOLL_FED.forEach(f => { const opt = document.createElement("option"); opt.value = f.id; opt.textContent = f.name; sF.appendChild(opt); });
     INNEBANDY_FED.forEach(f => { const opt = document.createElement("option"); opt.value = f.id; opt.textContent = f.name; sI.appendChild(opt); });
     
-    // Load settings AFTER populating
     loadSettings();
 }
 initDropdowns();
@@ -299,7 +296,7 @@ function toggleSport(sport) {
     const select = document.getElementById(sport === 'fotboll' ? 'selectFotboll' : 'selectInnebandy');
     select.disabled = !isChecked;
     validateForm();
-    saveSettings(); // Save immediately on toggle
+    saveSettings(); 
 }
 
 function setQuickDate(days) {
@@ -350,11 +347,13 @@ async function loadData() {
     const btn = document.getElementById("btnLoad");
     const lc = document.getElementById("loadingContainer");
     const lb = document.getElementById("loadingBar");
+    const lp = document.getElementById("loadingPercent");
 
     btn.innerHTML = `<svg class="animate-spin h-4 w-4 inline mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>HÄMTAR...`;
     btn.disabled = true;
     lc.classList.remove("hidden");
-    lb.style.width = "10%";
+    lb.style.width = "0%";
+    lp.textContent = "0%";
 
     state.fotboll = [];
     state.innebandy = [];
@@ -381,11 +380,14 @@ async function loadData() {
                 if (state.active.innebandy) promises.push(fetchInnebandy(date, innFedId).then(res => state.innebandy.push(...res)));
             });
             await Promise.all(promises);
-            lb.style.width = `${Math.min(100, ((i + BATCH_SIZE) / days.length) * 100)}%`;
+            
+            const progress = Math.min(100, Math.round(((i + BATCH_SIZE) / days.length) * 100));
+            lb.style.width = `${progress}%`;
+            lp.textContent = `${progress}%`;
         }
         
         document.getElementById("navPanel").classList.remove("hidden");
-        document.getElementById("navPanel").classList.add("flex");
+        document.getElementById("navPanel").classList.add("grid");
         
         // Fill the dropdown lists
         renderFilterList('Serier');
@@ -449,25 +451,18 @@ async function fetchInnebandy(date, fed) {
 // =====================================================================
 window.onpopstate = function(event) {
     if (event.state) {
-        // Restore state
         state.mode = event.state.mode;
         state.selectedSeries = event.state.selectedSeries || [];
         state.selectedReferees = event.state.selectedReferees || [];
         
-        // Re-render UI
+        closeAllDropdowns();
         updateMenuUI(state.mode);
         renderResults();
         
-        // Re-check checkboxes
+        // Sync checkboxes
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-        state.selectedSeries.forEach(s => {
-            const cb = document.querySelector(`input[data-val="${s}"]`);
-            if(cb) cb.checked = true;
-        });
-        state.selectedReferees.forEach(s => {
-            const cb = document.querySelector(`input[data-val="${s}"]`);
-            if(cb) cb.checked = true;
-        });
+        state.selectedSeries.forEach(s => { const cb = document.querySelector(`input[data-val="${s}"]`); if(cb) cb.checked = true; });
+        state.selectedReferees.forEach(s => { const cb = document.querySelector(`input[data-val="${s}"]`); if(cb) cb.checked = true; });
         updateSelectionCount();
     }
 };
@@ -484,12 +479,13 @@ function goToReferee(name) {
     state.mode = 'Domare';
     state.selectedReferees = [name];
     state.selectedSeries = [];
-    // Reset Checkboxes visually
+    
     document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
     const cb = document.querySelector(`input[data-type="Domare"][data-val="${name}"]`);
     if(cb) cb.checked = true;
     
     pushHistoryState();
+    closeAllDropdowns();
     updateMenuUI('Domare');
     renderResults();
     updateSelectionCount();
@@ -499,55 +495,68 @@ function goToSeries(name) {
     state.mode = 'Serier';
     state.selectedSeries = [name];
     state.selectedReferees = [];
-    // Reset Checkboxes visually
+    
     document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
     const cb = document.querySelector(`input[data-type="Serier"][data-val="${name}"]`);
     if(cb) cb.checked = true;
 
     pushHistoryState();
+    closeAllDropdowns();
     updateMenuUI('Serier');
     renderResults();
     updateSelectionCount();
 }
 
-
 // =====================================================================
-// NAVIGATION & UI
+// NAVIGATION & DROPDOWNS
 // =====================================================================
 function setMode(mode) {
     state.mode = mode;
+    closeAllDropdowns();
     pushHistoryState();
     updateMenuUI(mode);
     renderResults();
 }
 
+function toggleDropdown(type) {
+    const el = document.getElementById(`dropdown-${type}`);
+    const isHidden = el.classList.contains('hidden');
+    closeAllDropdowns();
+    if(isHidden) {
+        el.classList.remove('hidden');
+        setMode(type); // Switch mode to reflect what user is selecting
+    }
+}
+
+function closeAllDropdowns() {
+    document.getElementById('dropdown-Serier').classList.add('hidden');
+    document.getElementById('dropdown-Domare').classList.add('hidden');
+}
+
+// Close dropdowns if clicking outside
+document.addEventListener('click', function(event) {
+    const isClickInsideSer = document.getElementById('btn-Serier').contains(event.target) || document.getElementById('dropdown-Serier').contains(event.target);
+    const isClickInsideDom = document.getElementById('btn-Domare').contains(event.target) || document.getElementById('dropdown-Domare').contains(event.target);
+    
+    if (!isClickInsideSer) document.getElementById('dropdown-Serier').classList.add('hidden');
+    if (!isClickInsideDom) document.getElementById('dropdown-Domare').classList.add('hidden');
+});
+
 function updateMenuUI(mode) {
-    // Reset all buttons
     ['Topplista', 'Serier', 'Domare'].forEach(m => {
         const btn = document.getElementById(`btn-${m}`);
-        const content = document.getElementById(`content-${m}`);
-        const icon = document.getElementById(`icon-${m}`);
-        
         if (m === mode) {
-            btn.classList.add('bg-white/5', 'border-brand-primary/50');
-            btn.querySelector('span').classList.remove('text-zinc-300');
-            btn.querySelector('span').classList.add('text-brand-primary');
-            
-            if(content) content.classList.remove('hidden');
-            if(icon) icon.classList.add('rotate-180');
+            btn.classList.remove('text-zinc-300', 'border-white/5');
+            btn.classList.add('bg-white/10', 'text-white', 'border-brand-primary/50');
         } else {
-            btn.classList.remove('bg-white/5', 'border-brand-primary/50');
-            btn.querySelector('span').classList.add('text-zinc-300');
-            btn.querySelector('span').classList.remove('text-brand-primary');
-            
-            if(content) content.classList.add('hidden');
-            if(icon) icon.classList.remove('rotate-180');
+            btn.classList.add('text-zinc-300', 'border-white/5');
+            btn.classList.remove('bg-white/10', 'text-white', 'border-brand-primary/50');
         }
     });
 }
 
 function renderFilterList(type) {
-    const listEl = document.getElementById(`content-${type}`);
+    const listEl = document.getElementById(`dropdown-${type}`);
     listEl.innerHTML = "";
 
     let items = new Set();
@@ -571,12 +580,12 @@ function renderFilterList(type) {
         checkbox.type = "checkbox";
         checkbox.className = "hidden";
         checkbox.checked = isSelected;
-        checkbox.dataset.type = type; // Metadata for finding it later
+        checkbox.dataset.type = type;
         checkbox.dataset.val = item;
         checkbox.onchange = (e) => toggleSelection(type, item, e.target.checked);
 
         const content = document.createElement("div");
-        content.className = "flex justify-between items-center px-2 py-1.5 rounded bg-dark-bg/50 border border-transparent group-hover:border-white/10 transition-all text-[11px] text-zinc-400";
+        content.className = "flex justify-between items-center px-2 py-1.5 rounded bg-dark-bg/50 border border-transparent hover:bg-white/5 transition-all text-[11px] text-zinc-300";
         content.innerHTML = `
             <span class="truncate pr-2">${item}</span>
             <div class="check-icon w-3 h-3 rounded-full border border-current flex items-center justify-center opacity-20 transform scale-75 transition-all">
@@ -603,13 +612,28 @@ function toggleSelection(type, value, isChecked) {
     renderResults();
 }
 
+function clearSelection() {
+    state.selectedSeries = [];
+    state.selectedReferees = [];
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    updateSelectionCount();
+    renderResults();
+}
+
 function updateSelectionCount() {
     const s = state.selectedSeries.length;
     const d = state.selectedReferees.length;
     let txt = "";
     if (s > 0) txt += `${s} serier `;
     if (d > 0) txt += `${d} domare `;
-    document.getElementById("selectionCount").textContent = txt ? `${txt} valda` : "";
+    
+    const infoEl = document.getElementById("selectionInfo");
+    if(txt) {
+        document.getElementById("selectionCount").textContent = txt + "valda";
+        infoEl.classList.remove('hidden');
+    } else {
+        infoEl.classList.add('hidden');
+    }
 }
 
 // =====================================================================
@@ -629,21 +653,21 @@ function renderResults() {
     } 
     else if (state.mode === 'Serier') {
         if (state.selectedSeries.length === 0) {
-            area.innerHTML = `<div class="glass-card rounded-2xl p-16 flex flex-col items-center justify-center text-center animate-fade-in"><p class="text-zinc-400 font-bold mb-2">Välj serier i menyn</p><p class="text-zinc-600 text-xs">Klicka på "Serier" till vänster och välj i listan.</p></div>`;
+            area.innerHTML = `<div class="glass-card rounded-2xl p-16 flex flex-col items-center justify-center text-center animate-fade-in"><p class="text-zinc-400 font-bold mb-2">Välj serier</p><p class="text-zinc-600 text-xs">Använd menyn "Serier" ovan för att välja data.</p></div>`;
         } else {
             renderLeagueComparison(area, allData);
         }
     } 
     else if (state.mode === 'Domare') {
         if (state.selectedReferees.length === 0) {
-             area.innerHTML = `<div class="glass-card rounded-2xl p-16 flex flex-col items-center justify-center text-center animate-fade-in"><p class="text-zinc-400 font-bold mb-2">Välj domare i menyn</p><p class="text-zinc-600 text-xs">Klicka på "Domare" till vänster och välj i listan.</p></div>`;
+             area.innerHTML = `<div class="glass-card rounded-2xl p-16 flex flex-col items-center justify-center text-center animate-fade-in"><p class="text-zinc-400 font-bold mb-2">Välj domare</p><p class="text-zinc-600 text-xs">Använd menyn "Domare" ovan för att välja data.</p></div>`;
         } else {
             renderRefereeComparison(area, allData);
         }
     }
 }
 
-// ---- VIEW: TOPLISTA ----
+// ---- VIEW: MEST AKTIVA DOMARE ----
 function renderToplist(area, matches) {
     let counter = {};
     matches.forEach(m => {
@@ -660,21 +684,34 @@ function renderToplist(area, matches) {
     let ranking = Object.entries(counter).sort((a,b) => b[1].total - a[1].total);
 
     let html = `
-    <div class="glass-card rounded-2xl p-6 animate-fade-in">
-        <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
-            <h2 class="text-xl font-display font-black text-white">Topplista</h2>
-            <span class="text-xs font-bold bg-white/10 px-3 py-1 rounded-full text-zinc-400">${ranking.length} domare</span>
+    <div class="glass-card rounded-2xl p-4 md:p-6 animate-fade-in">
+        <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+            <h2 class="text-lg font-display font-black text-white">Mest aktiva domare</h2>
+            <span class="text-xs font-bold bg-white/10 px-2 py-1 rounded-full text-zinc-400 tabular-nums">${ranking.length} st</span>
         </div>
-        <div class="grid grid-cols-1 gap-2">
+        
+        <div class="grid grid-cols-12 text-[9px] uppercase tracking-wider text-zinc-500 pb-2 px-2">
+            <div class="col-span-6 md:col-span-5">Namn</div>
+            <div class="col-span-2 text-center text-emerald-500/80">Fot</div>
+            <div class="col-span-2 text-center text-blue-500/80">Inne</div>
+            <div class="col-span-2 text-center text-white">Tot</div>
+        </div>
+
+        <div class="flex flex-col gap-1">
             ${ranking.slice(0, 50).map(([name, data], i) => {
-                return `<div class="flex justify-between items-center p-2.5 rounded transition hover:bg-white/5 border-b border-white/5 last:border-0 group">
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 text-right text-zinc-600 font-mono text-xs">${i+1}.</span>
-                        <span onclick="goToReferee('${name}')" class="interactive-text font-bold text-sm text-zinc-300 group-hover:text-white">${name}</span>
+                return `<div class="grid grid-cols-12 items-center p-2 rounded bg-dark-surface/30 hover:bg-white/5 border border-transparent hover:border-white/5 transition group">
+                    <div class="col-span-6 md:col-span-5 flex items-center gap-3 overflow-hidden">
+                        <span class="w-6 text-right text-zinc-600 font-mono text-xs flex-shrink-0">${i+1}.</span>
+                        <span onclick="goToReferee('${name}')" class="interactive-text font-bold text-xs md:text-sm text-zinc-300 group-hover:text-white truncate">${name}</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[9px] uppercase tracking-wider text-zinc-500">${data.fotboll>0 ? 'FOT' : ''} ${data.innebandy>0 ? 'INNE' : ''}</span>
-                        <span class="bg-zinc-800 text-white px-2 py-0.5 rounded text-xs font-black min-w-[2rem] text-center">${data.total}</span>
+                    <div class="col-span-2 text-center">
+                        ${data.fotboll > 0 ? `<span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-1.5 py-0.5 rounded tabular-nums">${data.fotboll}</span>` : '<span class="text-zinc-700 text-[10px]">-</span>'}
+                    </div>
+                    <div class="col-span-2 text-center">
+                        ${data.innebandy > 0 ? `<span class="bg-blue-500/10 text-blue-400 text-[10px] font-bold px-1.5 py-0.5 rounded tabular-nums">${data.innebandy}</span>` : '<span class="text-zinc-700 text-[10px]">-</span>'}
+                    </div>
+                    <div class="col-span-2 text-center">
+                         <span class="bg-zinc-800 text-white px-2 py-0.5 rounded text-xs font-black min-w-[2rem] inline-block shadow-lg tabular-nums">${data.total}</span>
                     </div>
                 </div>`;
             }).join('')}
@@ -734,7 +771,6 @@ function renderLeagueComparison(area, allData) {
 function renderRefereeComparison(area, allData) {
     const selectedMatches = allData.filter(m => m.referees.some(r => state.selectedReferees.includes(r.name)));
     
-    // Aggregation
     let stats = state.selectedReferees.map(ref => {
         const matches = allData.filter(m => m.referees.some(r => r.name === ref));
         const leagues = {};
