@@ -32,11 +32,16 @@
         },
         animation: {
           'fade-in': 'fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+          'pop-up': 'popUp 0.2s ease-out forwards',
         },
         keyframes: {
           fadeIn: {
             '0%': { opacity: '0', transform: 'translateY(5px)' },
             '100%': { opacity: '1', transform: 'translateY(0)' },
+          },
+          popUp: {
+            '0%': { opacity: '0', transform: 'translate(-50%, -40%) scale(0.95)' },
+            '100%': { opacity: '1', transform: 'translate(-50%, -50%) scale(1)' },
           }
         }
       }
@@ -87,6 +92,31 @@
 
   <div class="glow-orb orb-1"></div>
   <div class="glow-orb orb-2"></div>
+
+  <div id="modal-backdrop" onclick="closeAllModals()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[90] transition-opacity"></div>
+
+  <div id="modal-Serier" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm max-h-[80vh] bg-dark-surface border border-white/10 rounded-2xl shadow-2xl z-[100] flex flex-col animate-pop-up">
+      <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+          <h3 class="font-display font-bold text-white text-lg">Välj Serier</h3>
+          <button onclick="closeAllModals()" class="text-zinc-400 hover:text-white"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div id="list-Serier" class="flex-1 overflow-y-auto p-2 custom-scrollbar"></div>
+      <div class="p-3 border-t border-white/10 bg-white/5">
+          <button onclick="closeAllModals()" class="w-full py-2 bg-brand-primary hover:bg-violet-500 text-white font-bold rounded-lg text-xs uppercase tracking-wide transition-colors">Klar</button>
+      </div>
+  </div>
+
+  <div id="modal-Domare" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm max-h-[80vh] bg-dark-surface border border-white/10 rounded-2xl shadow-2xl z-[100] flex flex-col animate-pop-up">
+      <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+          <h3 class="font-display font-bold text-white text-lg">Välj Domare</h3>
+          <button onclick="closeAllModals()" class="text-zinc-400 hover:text-white"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+      <div id="list-Domare" class="flex-1 overflow-y-auto p-2 custom-scrollbar"></div>
+      <div class="p-3 border-t border-white/10 bg-white/5">
+          <button onclick="closeAllModals()" class="w-full py-2 bg-brand-primary hover:bg-violet-500 text-white font-bold rounded-lg text-xs uppercase tracking-wide transition-colors">Klar</button>
+      </div>
+  </div>
+
 
   <div class="max-w-[1400px] mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -157,29 +187,21 @@
           </div>
         </div>
 
-        <div id="navPanel" class="hidden grid-cols-3 gap-2 animate-fade-in relative z-50">
+        <div id="navPanel" class="hidden grid-cols-3 gap-2 animate-fade-in">
             
             <button onclick="resetToToplist()" id="btn-Topplista" class="flex items-center justify-center px-2 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white">
                 Översikt
             </button>
 
-            <div class="relative">
-                <button onclick="toggleDropdown('Serier')" id="btn-Serier" class="w-full flex items-center justify-between px-2 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white">
-                    <span>Serier</span>
-                    <svg class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div id="dropdown-Serier" class="hidden absolute left-0 top-full mt-2 bg-dark-card border border-white/10 rounded-lg p-2 z-[60] shadow-2xl max-h-[400px] overflow-y-auto custom-scrollbar min-w-[240px]">
-                    </div>
-            </div>
+            <button onclick="openModal('Serier')" id="btn-Serier" class="flex items-center justify-between px-3 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white group">
+                <span>Serier</span>
+                <svg class="w-3 h-3 opacity-50 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
 
-            <div class="relative">
-                <button onclick="toggleDropdown('Domare')" id="btn-Domare" class="w-full flex items-center justify-between px-2 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white">
-                    <span>Domare</span>
-                    <svg class="w-3 h-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div id="dropdown-Domare" class="hidden absolute right-0 top-full mt-2 bg-dark-card border border-white/10 rounded-lg p-2 z-[60] shadow-2xl max-h-[400px] overflow-y-auto custom-scrollbar min-w-[240px]">
-                    </div>
-            </div>
+            <button onclick="openModal('Domare')" id="btn-Domare" class="flex items-center justify-between px-3 py-2.5 rounded-lg bg-dark-surface border border-white/5 hover:bg-white/5 transition-all font-display font-bold text-xs text-zinc-300 hover:text-white group">
+                <span>Domare</span>
+                <svg class="w-3 h-3 opacity-50 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
             
         </div>
         
@@ -225,7 +247,6 @@ const INNEBANDY_FED = [
   { id: 15, name: "Västmanland" }, { id: 5, name: "Örebro Län" }, { id: 16, name: "Östergötland" }
 ];
 
-// Sort alphabetically
 FOTBOLL_FED.sort((a,b) => a.name.localeCompare(b.name));
 INNEBANDY_FED.sort((a,b) => a.name.localeCompare(b.name));
 
@@ -256,28 +277,22 @@ function saveSettings() {
 function loadSettings() {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) return;
-    
     try {
         const settings = JSON.parse(data);
-        
         if (settings.fotbollActive) {
             document.getElementById('switchFotboll').checked = true;
             document.getElementById('selectFotboll').disabled = false;
             if(settings.fotbollFed) document.getElementById('selectFotboll').value = settings.fotbollFed;
             state.active.fotboll = true;
         }
-
         if (settings.innebandyActive) {
             document.getElementById('switchInnebandy').checked = true;
             document.getElementById('selectInnebandy').disabled = false;
             if(settings.innebandyFed) document.getElementById('selectInnebandy').value = settings.innebandyFed;
             state.active.innebandy = true;
         }
-
         validateForm(); 
-    } catch(e) {
-        console.error("Error loading settings", e);
-    }
+    } catch(e) {}
 }
 
 function initDropdowns() {
@@ -285,7 +300,6 @@ function initDropdowns() {
     const sI = document.getElementById("selectInnebandy");
     FOTBOLL_FED.forEach(f => { const opt = document.createElement("option"); opt.value = f.id; opt.textContent = f.name; sF.appendChild(opt); });
     INNEBANDY_FED.forEach(f => { const opt = document.createElement("option"); opt.value = f.id; opt.textContent = f.name; sI.appendChild(opt); });
-    
     loadSettings();
 }
 initDropdowns();
@@ -389,11 +403,9 @@ async function loadData() {
         document.getElementById("navPanel").classList.remove("hidden");
         document.getElementById("navPanel").classList.add("grid");
         
-        // Fill the dropdown lists
         renderFilterList('Serier');
         renderFilterList('Domare');
         
-        // Start view
         setMode("Topplista");
 
     } catch (error) {
@@ -455,11 +467,10 @@ window.onpopstate = function(event) {
         state.selectedSeries = event.state.selectedSeries || [];
         state.selectedReferees = event.state.selectedReferees || [];
         
-        closeAllDropdowns();
+        closeAllModals();
         updateMenuUI(state.mode);
         renderResults();
         
-        // Sync checkboxes
         document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
         state.selectedSeries.forEach(s => { const cb = document.querySelector(`input[data-val="${s}"]`); if(cb) cb.checked = true; });
         state.selectedReferees.forEach(s => { const cb = document.querySelector(`input[data-val="${s}"]`); if(cb) cb.checked = true; });
@@ -477,7 +488,7 @@ function pushHistoryState() {
 
 function resetToToplist() {
     state.mode = 'Topplista';
-    closeAllDropdowns();
+    closeAllModals();
     pushHistoryState();
     updateMenuUI('Topplista');
     renderResults();
@@ -493,7 +504,7 @@ function goToReferee(name) {
     if(cb) cb.checked = true;
     
     pushHistoryState();
-    closeAllDropdowns();
+    closeAllModals();
     updateMenuUI('Domare');
     renderResults();
     updateSelectionCount();
@@ -509,48 +520,38 @@ function goToSeries(name) {
     if(cb) cb.checked = true;
 
     pushHistoryState();
-    closeAllDropdowns();
+    closeAllModals();
     updateMenuUI('Serier');
     renderResults();
     updateSelectionCount();
 }
 
 // =====================================================================
-// NAVIGATION & DROPDOWNS
+// NAVIGATION & MODALS
 // =====================================================================
 function setMode(mode) {
     state.mode = mode;
-    // Don't close dropdowns immediately here if triggered by dropdown itself
     pushHistoryState();
     updateMenuUI(mode);
     renderResults();
 }
 
-function toggleDropdown(type) {
-    const el = document.getElementById(`dropdown-${type}`);
-    const isHidden = el.classList.contains('hidden');
+function openModal(type) {
+    const modal = document.getElementById(`modal-${type}`);
+    const backdrop = document.getElementById('modal-backdrop');
     
-    closeAllDropdowns(); // Close others first
-    
-    if(isHidden) {
-        el.classList.remove('hidden');
-        setMode(type); // Switch mode logic but keep dropdown open
+    if(modal) {
+        modal.classList.remove('hidden');
+        backdrop.classList.remove('hidden');
+        setMode(type);
     }
 }
 
-function closeAllDropdowns() {
-    document.getElementById('dropdown-Serier').classList.add('hidden');
-    document.getElementById('dropdown-Domare').classList.add('hidden');
+function closeAllModals() {
+    document.getElementById('modal-Serier').classList.add('hidden');
+    document.getElementById('modal-Domare').classList.add('hidden');
+    document.getElementById('modal-backdrop').classList.add('hidden');
 }
-
-// Close dropdowns if clicking outside
-document.addEventListener('click', function(event) {
-    const isClickInsideSer = document.getElementById('btn-Serier').contains(event.target) || document.getElementById('dropdown-Serier').contains(event.target);
-    const isClickInsideDom = document.getElementById('btn-Domare').contains(event.target) || document.getElementById('dropdown-Domare').contains(event.target);
-    
-    if (!isClickInsideSer) document.getElementById('dropdown-Serier').classList.add('hidden');
-    if (!isClickInsideDom) document.getElementById('dropdown-Domare').classList.add('hidden');
-});
 
 function updateMenuUI(mode) {
     ['Topplista', 'Serier', 'Domare'].forEach(m => {
@@ -566,7 +567,7 @@ function updateMenuUI(mode) {
 }
 
 function renderFilterList(type) {
-    const listEl = document.getElementById(`dropdown-${type}`);
+    const listEl = document.getElementById(`list-${type}`);
     listEl.innerHTML = "";
 
     let items = new Set();
@@ -595,11 +596,11 @@ function renderFilterList(type) {
         checkbox.onchange = (e) => toggleSelection(type, item, e.target.checked);
 
         const content = document.createElement("div");
-        content.className = "flex justify-between items-center px-2 py-1.5 rounded bg-dark-bg/50 border border-transparent hover:bg-white/5 transition-all text-[11px] text-zinc-300";
+        content.className = "flex justify-between items-center px-3 py-2.5 rounded bg-dark-bg/50 border border-transparent hover:bg-white/5 transition-all text-xs text-zinc-300";
         content.innerHTML = `
             <span class="truncate pr-2">${item}</span>
-            <div class="check-icon w-3 h-3 rounded-full border border-current flex items-center justify-center opacity-20 transform scale-75 transition-all">
-                <div class="w-1.5 h-1.5 bg-current rounded-full"></div>
+            <div class="check-icon w-4 h-4 rounded-full border border-current flex items-center justify-center opacity-20 transform scale-75 transition-all">
+                <div class="w-2 h-2 bg-current rounded-full"></div>
             </div>
         `;
 
@@ -618,7 +619,7 @@ function toggleSelection(type, value, isChecked) {
         else state.selectedReferees = state.selectedReferees.filter(i => i !== value);
     }
     updateSelectionCount();
-    pushHistoryState();
+    // No history push here to avoid spamming history with every checkbox click
     renderResults();
 }
 
@@ -663,14 +664,14 @@ function renderResults() {
     } 
     else if (state.mode === 'Serier') {
         if (state.selectedSeries.length === 0) {
-            area.innerHTML = `<div class="glass-card rounded-2xl p-16 flex flex-col items-center justify-center text-center animate-fade-in"><p class="text-zinc-400 font-bold mb-2">Välj serier</p><p class="text-zinc-600 text-xs">Använd menyn "Serier" ovan för att välja data.</p></div>`;
+            area.innerHTML = `<div class="glass-card rounded-2xl p-16 flex flex-col items-center justify-center text-center animate-fade-in"><p class="text-zinc-400 font-bold mb-2">Välj serier</p><p class="text-zinc-600 text-xs">Välj i menyn.</p></div>`;
         } else {
             renderLeagueComparison(area, allData);
         }
     } 
     else if (state.mode === 'Domare') {
         if (state.selectedReferees.length === 0) {
-             area.innerHTML = `<div class="glass-card rounded-2xl p-16 flex flex-col items-center justify-center text-center animate-fade-in"><p class="text-zinc-400 font-bold mb-2">Välj domare</p><p class="text-zinc-600 text-xs">Använd menyn "Domare" ovan för att välja data.</p></div>`;
+             area.innerHTML = `<div class="glass-card rounded-2xl p-16 flex flex-col items-center justify-center text-center animate-fade-in"><p class="text-zinc-400 font-bold mb-2">Välj domare</p><p class="text-zinc-600 text-xs">Välj i menyn.</p></div>`;
         } else {
             renderRefereeComparison(area, allData);
         }
@@ -699,14 +700,12 @@ function renderToplist(area, matches) {
             <h2 class="text-lg font-display font-black text-white">Mest aktiva domare</h2>
             <span class="text-xs font-bold bg-white/10 px-2 py-1 rounded-full text-zinc-400 tabular-nums">${ranking.length} st</span>
         </div>
-        
         <div class="grid grid-cols-12 text-[9px] uppercase tracking-wider text-zinc-500 pb-2 px-2">
             <div class="col-span-6 md:col-span-5">Namn</div>
             <div class="col-span-2 text-center text-emerald-500/80">Fot</div>
             <div class="col-span-2 text-center text-blue-500/80">Inne</div>
             <div class="col-span-2 text-center text-white">Tot</div>
         </div>
-
         <div class="flex flex-col gap-1">
             ${ranking.slice(0, 50).map(([name, data], i) => {
                 return `<div class="grid grid-cols-12 items-center p-2 rounded bg-dark-surface/30 hover:bg-white/5 border border-transparent hover:border-white/5 transition group">
@@ -714,15 +713,9 @@ function renderToplist(area, matches) {
                         <span class="w-6 text-right text-zinc-600 font-mono text-xs flex-shrink-0">${i+1}.</span>
                         <span onclick="goToReferee('${name}')" class="interactive-text font-bold text-xs md:text-sm text-zinc-300 group-hover:text-white truncate">${name}</span>
                     </div>
-                    <div class="col-span-2 text-center">
-                        ${data.fotboll > 0 ? `<span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-1.5 py-0.5 rounded tabular-nums">${data.fotboll}</span>` : '<span class="text-zinc-700 text-[10px]">-</span>'}
-                    </div>
-                    <div class="col-span-2 text-center">
-                        ${data.innebandy > 0 ? `<span class="bg-blue-500/10 text-blue-400 text-[10px] font-bold px-1.5 py-0.5 rounded tabular-nums">${data.innebandy}</span>` : '<span class="text-zinc-700 text-[10px]">-</span>'}
-                    </div>
-                    <div class="col-span-2 text-center">
-                         <span class="bg-zinc-800 text-white px-2 py-0.5 rounded text-xs font-black min-w-[2rem] inline-block shadow-lg tabular-nums">${data.total}</span>
-                    </div>
+                    <div class="col-span-2 text-center">${data.fotboll > 0 ? `<span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-1.5 py-0.5 rounded tabular-nums">${data.fotboll}</span>` : '<span class="text-zinc-700 text-[10px]">-</span>'}</div>
+                    <div class="col-span-2 text-center">${data.innebandy > 0 ? `<span class="bg-blue-500/10 text-blue-400 text-[10px] font-bold px-1.5 py-0.5 rounded tabular-nums">${data.innebandy}</span>` : '<span class="text-zinc-700 text-[10px]">-</span>'}</div>
+                    <div class="col-span-2 text-center"><span class="bg-zinc-800 text-white px-2 py-0.5 rounded text-xs font-black min-w-[2rem] inline-block shadow-lg tabular-nums">${data.total}</span></div>
                 </div>`;
             }).join('')}
         </div>
@@ -734,41 +727,25 @@ function renderToplist(area, matches) {
 // ---- VIEW: LEAGUE COMPARISON (AGGREGATED) ----
 function renderLeagueComparison(area, allData) {
     const selectedData = allData.filter(m => state.selectedSeries.includes(m.serie));
-    
-    // Aggregated Stats for ALL selected series combined
     const refCounts = {};
-    selectedData.forEach(m => m.referees.forEach(r => { 
-        if(r.name) refCounts[r.name] = (refCounts[r.name]||0)+1; 
-    }));
+    selectedData.forEach(m => m.referees.forEach(r => { if(r.name) refCounts[r.name] = (refCounts[r.name]||0)+1; }));
     const sortedRefs = Object.entries(refCounts).sort((a,b) => b[1] - a[1]);
-
     const title = state.selectedSeries.length > 1 ? "Sammanställd statistik" : state.selectedSeries[0];
     const subTitle = state.selectedSeries.length > 1 ? `${state.selectedSeries.length} serier valda` : "1 serie vald";
 
     let html = `
     <div class="space-y-6 animate-fade-in">
-        
         <div class="glass-card rounded-xl p-5 border-l-4 border-brand-primary">
             <div class="flex justify-between items-start mb-4 border-b border-white/10 pb-3">
-                <div>
-                    <h3 class="text-lg font-bold text-white">${title}</h3>
-                    <span class="text-[10px] uppercase text-zinc-500 tracking-widest">${selectedData.length} matcher totalt (${subTitle})</span>
-                </div>
+                <div><h3 class="text-lg font-bold text-white">${title}</h3><span class="text-[10px] uppercase text-zinc-500 tracking-widest">${selectedData.length} matcher totalt (${subTitle})</span></div>
             </div>
-            
             <div class="bg-dark-surface/50 rounded-lg p-3">
                 <h4 class="text-[10px] font-bold text-zinc-400 uppercase mb-2">Mest aktiva domare i urvalet</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-80 overflow-y-auto custom-scrollbar pr-2">
-                        ${sortedRefs.map(([name, count], i) => `
-                        <div class="flex justify-between items-center text-xs p-1.5 rounded hover:bg-white/5 border border-white/5">
-                            <span onclick="goToReferee('${name}')" class="interactive-text text-zinc-300 truncate pr-2"><span class="text-zinc-600 mr-1.5 w-4 inline-block text-right">${i+1}.</span>${name}</span>
-                            <span class="font-bold text-white bg-white/10 px-1.5 py-0.5 rounded text-[10px]">${count}</span>
-                        </div>
-                        `).join('')}
+                        ${sortedRefs.map(([name, count], i) => `<div class="flex justify-between items-center text-xs p-1.5 rounded hover:bg-white/5 border border-white/5"><span onclick="goToReferee('${name}')" class="interactive-text text-zinc-300 truncate pr-2"><span class="text-zinc-600 mr-1.5 w-4 inline-block text-right">${i+1}.</span>${name}</span><span class="font-bold text-white bg-white/10 px-1.5 py-0.5 rounded text-[10px]">${count}</span></div>`).join('')}
                 </div>
             </div>
         </div>
-
         <div class="pt-6 border-t border-white/5">
             <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 ml-1">Matcher i urvalet (Datum & Tid)</h3>
             ${generateMatchCardsHtml(selectedData)}
@@ -780,21 +757,12 @@ function renderLeagueComparison(area, allData) {
 // ---- VIEW: REFEREE COMPARISON ----
 function renderRefereeComparison(area, allData) {
     const selectedMatches = allData.filter(m => m.referees.some(r => state.selectedReferees.includes(r.name)));
-    
     let stats = state.selectedReferees.map(ref => {
         const matches = allData.filter(m => m.referees.some(r => r.name === ref));
         const leagues = {};
         matches.forEach(m => leagues[m.serie] = (leagues[m.serie]||0)+1);
         const topLeague = Object.entries(leagues).sort((a,b) => b[1] - a[1])[0];
-
-        return {
-            name: ref,
-            total: matches.length,
-            fotboll: matches.filter(m => m.sport === 'fotboll').length,
-            innebandy: matches.filter(m => m.sport === 'innebandy').length,
-            topLeagueName: topLeague ? topLeague[0] : "-",
-            topLeagueCount: topLeague ? topLeague[1] : 0
-        };
+        return { name: ref, total: matches.length, fotboll: matches.filter(m => m.sport === 'fotboll').length, innebandy: matches.filter(m => m.sport === 'innebandy').length, topLeagueName: topLeague ? topLeague[0] : "-", topLeagueCount: topLeague ? topLeague[1] : 0 };
     }).sort((a,b) => b.total - a.total);
 
     let html = `
@@ -803,77 +771,28 @@ function renderRefereeComparison(area, allData) {
             <h2 class="text-xl font-display font-black text-white mb-4">Domarjämförelse</h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="text-[10px] uppercase text-zinc-500 border-b border-white/10">
-                            <th class="pb-2 pl-2">Namn</th>
-                            <th class="pb-2 text-center">Totalt</th>
-                            <th class="pb-2 text-center">Fotboll</th>
-                            <th class="pb-2 text-center">Inneb.</th>
-                            <th class="pb-2 text-right pr-2">Vanligaste Serie</th>
-                        </tr>
-                    </thead>
+                    <thead><tr class="text-[10px] uppercase text-zinc-500 border-b border-white/10"><th class="pb-2 pl-2">Namn</th><th class="pb-2 text-center">Totalt</th><th class="pb-2 text-center">Fotboll</th><th class="pb-2 text-center">Inneb.</th><th class="pb-2 text-right pr-2">Vanligaste Serie</th></tr></thead>
                     <tbody class="text-xs font-medium text-zinc-300">
-                        ${stats.map(s => `
-                            <tr class="border-b border-white/5 hover:bg-white/5 transition">
-                                <td class="py-3 pl-2 font-bold text-white text-sm">${s.name}</td>
-                                <td class="py-3 text-center"><span class="bg-white/10 text-white px-2 py-1 rounded font-bold">${s.total}</span></td>
-                                <td class="py-3 text-center text-zinc-500">${s.fotboll || '-'}</td>
-                                <td class="py-3 text-center text-zinc-500">${s.innebandy || '-'}</td>
-                                <td class="py-3 text-right pr-2">
-                                    <div class="flex flex-col items-end">
-                                        <span class="truncate max-w-[120px] cursor-pointer hover:text-white" onclick="goToSeries('${s.topLeagueName}')">${s.topLeagueName}</span>
-                                        <span class="text-[9px] text-zinc-500">${s.topLeagueCount} matcher</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        `).join('')}
+                        ${stats.map(s => `<tr class="border-b border-white/5 hover:bg-white/5 transition"><td class="py-3 pl-2 font-bold text-white text-sm">${s.name}</td><td class="py-3 text-center"><span class="bg-white/10 text-white px-2 py-1 rounded font-bold">${s.total}</span></td><td class="py-3 text-center text-zinc-500">${s.fotboll || '-'}</td><td class="py-3 text-center text-zinc-500">${s.innebandy || '-'}</td><td class="py-3 text-right pr-2"><div class="flex flex-col items-end"><span class="truncate max-w-[120px] cursor-pointer hover:text-white" onclick="goToSeries('${s.topLeagueName}')">${s.topLeagueName}</span><span class="text-[9px] text-zinc-500">${s.topLeagueCount} matcher</span></div></td></tr>`).join('')}
                     </tbody>
                 </table>
             </div>
         </div>
-
-        <div>
-            <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 ml-1">Gemensam matchhistorik</h3>
-            ${generateMatchCardsHtml(selectedMatches)}
-        </div>
+        <div><h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 ml-1">Gemensam matchhistorik</h3>${generateMatchCardsHtml(selectedMatches)}</div>
     </div>`;
     area.innerHTML = html;
 }
 
-// ---- SHARED COMPONENT: MATCH CARDS ----
 function generateMatchCardsHtml(matches) {
     if(!matches || matches.length === 0) return '<p class="text-zinc-500 text-sm">Inga matcher.</p>';
-
-    const sortedMatches = matches.sort((a,b) => {
-        const dateA = new Date(`${a.date}T${a.time}`);
-        const dateB = new Date(`${b.date}T${b.time}`);
-        return dateA - dateB;
-    });
-
+    const sortedMatches = matches.sort((a,b) => { const dateA = new Date(`${a.date}T${a.time}`); const dateB = new Date(`${b.date}T${b.time}`); return dateA - dateB; });
     return `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">` + sortedMatches.map(m => {
         const isFotboll = m.sport === "fotboll";
         const accent = isFotboll ? "border-emerald-500/30" : "border-blue-500/30";
         const badge = isFotboll ? "text-emerald-400 bg-emerald-500/10" : "text-blue-400 bg-blue-500/10";
-        
-        return `<div class="bg-dark-surface border border-white/5 ${accent} border-l-2 rounded-lg p-3 hover:bg-white/5 transition group">
-            <div class="flex justify-between items-start mb-2">
-                <span onclick="goToSeries('${m.serie}')" class="interactive-text text-[9px] font-bold uppercase tracking-wider ${badge} px-1.5 py-0.5 rounded truncate max-w-[60%]">${m.serie}</span>
-                <div class="flex flex-col items-end">
-                    <span class="text-[10px] font-mono text-zinc-300 font-bold">${m.date}</span>
-                    <span class="text-[9px] font-mono text-zinc-500">${m.time}</span>
-                </div>
-            </div>
-            <div class="mb-2">
-                <div class="text-xs font-bold text-zinc-200">${m.home} <span class="text-zinc-600 font-light mx-1">vs</span> ${m.away}</div>
-                <div class="text-[10px] text-zinc-500 mt-0.5 flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${m.hall}</div>
-            </div>
-            <div class="pt-2 border-t border-white/5 flex flex-wrap gap-2">
-                ${(m.referees||[]).map(r => `<span onclick="goToReferee('${r.name}')" class="interactive-text text-[10px] text-zinc-400 bg-black/30 px-1.5 py-0.5 rounded border border-white/5 ${state.selectedReferees.includes(r.name) ? 'text-brand-primary border-brand-primary/30' : ''}">${r.name}</span>`).join('')}
-            </div>
-        </div>`;
+        return `<div class="bg-dark-surface border border-white/5 ${accent} border-l-2 rounded-lg p-3 hover:bg-white/5 transition group"><div class="flex justify-between items-start mb-2"><span onclick="goToSeries('${m.serie}')" class="interactive-text text-[9px] font-bold uppercase tracking-wider ${badge} px-1.5 py-0.5 rounded truncate max-w-[60%]">${m.serie}</span><div class="flex flex-col items-end"><span class="text-[10px] font-mono text-zinc-300 font-bold">${m.date}</span><span class="text-[9px] font-mono text-zinc-500">${m.time}</span></div></div><div class="mb-2"><div class="text-xs font-bold text-zinc-200">${m.home} <span class="text-zinc-600 font-light mx-1">vs</span> ${m.away}</div><div class="text-[10px] text-zinc-500 mt-0.5 flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${m.hall}</div></div><div class="pt-2 border-t border-white/5 flex flex-wrap gap-2">${(m.referees||[]).map(r => `<span onclick="goToReferee('${r.name}')" class="interactive-text text-[10px] text-zinc-400 bg-black/30 px-1.5 py-0.5 rounded border border-white/5 ${state.selectedReferees.includes(r.name) ? 'text-brand-primary border-brand-primary/30' : ''}">${r.name}</span>`).join('')}</div></div>`;
     }).join("") + `</div>`;
 }
-
 </script>
 </body>
 </html>
