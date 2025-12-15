@@ -143,16 +143,23 @@
                 <div class="bg-dark-surface/50 rounded-lg p-2 border border-white/5 flex flex-col gap-2">
                     <div class="flex justify-between items-center">
                         <span class="text-[10px] font-bold uppercase tracking-wide text-zinc-400">Fotboll</span>
-                        <input type="checkbox" id="switchFotboll" class="accent-emerald-500 w-3 h-3 cursor-pointer" onchange="toggleSport('fotboll')">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" id="switchFotboll" class="sr-only peer" onchange="toggleSport('fotboll')">
+                          <div class="w-7 h-4 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-500 after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-900 peer-checked:after:bg-emerald-400 border border-white/10 peer-checked:border-emerald-500/50"></div>
+                        </label>
                     </div>
                     <select id="selectFotboll" onchange="validateForm(); saveSettings();" disabled class="w-full bg-dark-bg text-zinc-300 text-[10px] border border-white/10 rounded px-1 py-1 outline-none focus:border-emerald-500/50 disabled:opacity-30">
                         <option value="">Förbund...</option>
                     </select>
                 </div>
+
                 <div class="bg-dark-surface/50 rounded-lg p-2 border border-white/5 flex flex-col gap-2">
                      <div class="flex justify-between items-center">
                         <span class="text-[10px] font-bold uppercase tracking-wide text-zinc-400">Innebandy</span>
-                        <input type="checkbox" id="switchInnebandy" class="accent-blue-500 w-3 h-3 cursor-pointer" onchange="toggleSport('innebandy')">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" id="switchInnebandy" class="sr-only peer" onchange="toggleSport('innebandy')">
+                          <div class="w-7 h-4 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-500 after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-900 peer-checked:after:bg-blue-400 border border-white/10 peer-checked:border-blue-500/50"></div>
+                        </label>
                     </div>
                     <select id="selectInnebandy" onchange="validateForm(); saveSettings();" disabled class="w-full bg-dark-bg text-zinc-300 text-[10px] border border-white/10 rounded px-1 py-1 outline-none focus:border-blue-500/50 disabled:opacity-30">
                         <option value="">Förbund...</option>
@@ -167,8 +174,8 @@
                   <button onclick="setQuickDate(365)" class="flex-1 text-[9px] font-bold bg-white/5 hover:bg-white/10 border border-white/5 py-1 rounded text-zinc-400">1år</button>
                </div>
                <div class="flex gap-2">
-                 <input id="dateFrom" type="date" onchange="validateForm()" class="w-full bg-dark-bg/50 text-zinc-400 text-[10px] font-medium border border-white/10 rounded px-1 py-1.5 uppercase">
-                 <input id="dateTo" type="date" onchange="validateForm()" class="w-full bg-dark-bg/50 text-zinc-400 text-[10px] font-medium border border-white/10 rounded px-1 py-1.5 uppercase">
+                 <input id="dateFrom" type="date" onchange="validateForm(); saveSettings();" class="w-full bg-dark-bg/50 text-zinc-400 text-[10px] font-medium border border-white/10 rounded px-1 py-1.5 uppercase">
+                 <input id="dateTo" type="date" onchange="validateForm(); saveSettings();" class="w-full bg-dark-bg/50 text-zinc-400 text-[10px] font-medium border border-white/10 rounded px-1 py-1.5 uppercase">
                </div>
             </div>
 
@@ -212,14 +219,22 @@
 
       </aside>
 
-      <main class="lg:col-span-9 z-0">
-        <div id="resultArea" class="min-h-[500px]">
+      <main class="lg:col-span-9 z-0 flex flex-col justify-between min-h-[500px]">
+        <div id="resultArea" class="flex-1">
           <div class="h-full flex flex-col items-center justify-center py-32 opacity-30 bg-white/5 rounded-2xl border border-dashed border-white/10">
             <svg class="w-12 h-12 text-zinc-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             <p class="text-sm font-display font-bold text-zinc-300">Statistikcenter</p>
             <p class="text-xs text-zinc-500 mt-1">Ställ in parametrar för att starta.</p>
           </div>
         </div>
+
+        <footer class="mt-12 pt-6 border-t border-white/5 text-center">
+             <p class="text-[10px] text-zinc-600 leading-relaxed">
+                 All data hämtas i realtid från <a href="https://www.svenskfotboll.se" target="_blank" class="hover:text-zinc-400 transition underline decoration-zinc-700 underline-offset-2">svenskfotboll.se</a> och <a href="https://www.innebandy.se" target="_blank" class="hover:text-zinc-400 transition underline decoration-zinc-700 underline-offset-2">innebandy.se</a>.
+                 <br>
+                 Ingen personlig data lagras. Kontakt: <a href="mailto:refstat@dzanic.se" class="hover:text-brand-primary transition font-medium">refstat@dzanic.se</a>
+             </p>
+        </footer>
       </main>
 
     </div>
@@ -264,6 +279,27 @@ let state = {
 };
 
 // =====================================================================
+// HELPER: ROLE MAPPING
+// =====================================================================
+function getShortRole(roleDescription) {
+    if (!roleDescription) return "";
+    const rd = roleDescription.toLowerCase();
+    
+    // Fotboll
+    if (rd === "domare") return "HD";
+    if (rd.includes("ass") && rd.includes("1")) return "AD1";
+    if (rd.includes("ass") && rd.includes("2")) return "AD2";
+    if (rd.includes("fjärde")) return "4D";
+    
+    // Futsal (ofta via fotbolls-API)
+    if (rd.includes("först")) return "1D";
+    if (rd.includes("andr")) return "2D";
+    if (rd.includes("tredje")) return "3D";
+    
+    return roleDescription.substring(0, 2).toUpperCase(); // Fallback
+}
+
+// =====================================================================
 // PERSISTENCE & INIT
 // =====================================================================
 const STORAGE_KEY = 'refstat_pro_config_v3';
@@ -273,7 +309,9 @@ function saveSettings() {
         fotbollActive: document.getElementById('switchFotboll').checked,
         fotbollFed: document.getElementById('selectFotboll').value,
         innebandyActive: document.getElementById('switchInnebandy').checked,
-        innebandyFed: document.getElementById('selectInnebandy').value
+        innebandyFed: document.getElementById('selectInnebandy').value,
+        dateFrom: document.getElementById('dateFrom').value,
+        dateTo: document.getElementById('dateTo').value
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
 }
@@ -295,6 +333,9 @@ function loadSettings() {
             if(settings.innebandyFed) document.getElementById('selectInnebandy').value = settings.innebandyFed;
             state.active.innebandy = true;
         }
+        if (settings.dateFrom) document.getElementById('dateFrom').value = settings.dateFrom;
+        if (settings.dateTo) document.getElementById('dateTo').value = settings.dateTo;
+        
         validateForm(); 
     } catch(e) {}
 }
@@ -324,6 +365,7 @@ function setQuickDate(days) {
     document.getElementById("dateTo").value = end.toISOString().split('T')[0];
     document.getElementById("dateFrom").value = start.toISOString().split('T')[0];
     validateForm();
+    saveSettings();
 }
 
 function validateForm() {
@@ -431,7 +473,7 @@ async function fetchFotboll(date, fed) {
       (comp.games || []).forEach(g => {
         out.push({
           sport: "fotboll", serie: comp.name, date: g.date.slice(0,10), time: g.date.slice(11,16), hall: g.location, home: g.homeTeam?.name, away: g.awayTeam?.name,
-          referees: (g.referees || []).map(r => ({ name: r.name, role: r.roleDescription || "" }))
+          referees: (g.referees || []).map(r => ({ name: r.name, role: getShortRole(r.roleDescription) }))
         });
       });
     });
@@ -452,7 +494,10 @@ async function fetchInnebandy(date, fed) {
               block.Matches.forEach(m => {
                 out.push({
                   sport: "innebandy", serie: block.Name, date: m.MatchDateTime.slice(0,10), time: m.MatchDateTime.slice(11,16), hall: m.Venue, home: m.HomeTeam, away: m.AwayTeam,
-                  referees: [{ name: m.Referee1 }, { name: m.Referee2 }]
+                  referees: [
+                      { name: m.Referee1, role: "D1" }, 
+                      { name: m.Referee2, role: "D2" }
+                  ]
                 });
               });
           }
@@ -475,7 +520,8 @@ window.onpopstate = function(event) {
         updateMenuUI(state.mode);
         renderResults();
         
-        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        // FIX: Rensa endast filter-checkboxar, inte sport-switches
+        document.querySelectorAll('input[type="checkbox"][data-type]').forEach(cb => cb.checked = false);
         state.selectedSeries.forEach(s => { const cb = document.querySelector(`input[data-val="${s}"]`); if(cb) cb.checked = true; });
         state.selectedReferees.forEach(s => { const cb = document.querySelector(`input[data-val="${s}"]`); if(cb) cb.checked = true; });
         updateSelectionCount();
@@ -503,7 +549,8 @@ function goToReferee(name) {
     state.selectedReferees = [name];
     state.selectedSeries = [];
     
-    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    // FIX: Rensa endast filter-checkboxar
+    document.querySelectorAll('input[type="checkbox"][data-type]').forEach(cb => cb.checked = false);
     const cb = document.querySelector(`input[data-type="Domare"][data-val="${name}"]`);
     if(cb) cb.checked = true;
     
@@ -519,7 +566,8 @@ function goToSeries(name) {
     state.selectedSeries = [name];
     state.selectedReferees = [];
     
-    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    // FIX: Rensa endast filter-checkboxar
+    document.querySelectorAll('input[type="checkbox"][data-type]').forEach(cb => cb.checked = false);
     const cb = document.querySelector(`input[data-type="Serier"][data-val="${name}"]`);
     if(cb) cb.checked = true;
 
@@ -595,7 +643,7 @@ function renderFilterList(type) {
         checkbox.type = "checkbox";
         checkbox.className = "hidden";
         checkbox.checked = isSelected;
-        checkbox.dataset.type = type;
+        checkbox.dataset.type = type; // Viktigt för selektorn
         checkbox.dataset.val = item;
         checkbox.onchange = (e) => toggleSelection(type, item, e.target.checked);
 
@@ -630,7 +678,8 @@ function toggleSelection(type, value, isChecked) {
 function clearSelection() {
     state.selectedSeries = [];
     state.selectedReferees = [];
-    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    // FIX: Rensa endast filter-checkboxar
+    document.querySelectorAll('input[type="checkbox"][data-type]').forEach(cb => cb.checked = false);
     updateSelectionCount();
     renderResults();
 }
@@ -758,17 +807,85 @@ function renderLeagueComparison(area, allData) {
     area.innerHTML = html;
 }
 
-// ---- VIEW: REFEREE COMPARISON ----
+// ---- VIEW: REFEREE COMPARISON (UPPDATERAD - INGA SIFFROR) ----
 function renderRefereeComparison(area, allData) {
+    // Filtrera fram matcher där någon av de valda domarna är med
     const selectedMatches = allData.filter(m => m.referees.some(r => state.selectedReferees.includes(r.name)));
+    
+    // 1. Beräkna statistik för huvudtabellen
     let stats = state.selectedReferees.map(ref => {
         const matches = allData.filter(m => m.referees.some(r => r.name === ref));
         const leagues = {};
         matches.forEach(m => leagues[m.serie] = (leagues[m.serie]||0)+1);
         const topLeague = Object.entries(leagues).sort((a,b) => b[1] - a[1])[0];
-        return { name: ref, total: matches.length, fotboll: matches.filter(m => m.sport === 'fotboll').length, innebandy: matches.filter(m => m.sport === 'innebandy').length, topLeagueName: topLeague ? topLeague[0] : "-", topLeagueCount: topLeague ? topLeague[1] : 0 };
+        return { 
+            name: ref, 
+            total: matches.length, 
+            fotboll: matches.filter(m => m.sport === 'fotboll').length, 
+            innebandy: matches.filter(m => m.sport === 'innebandy').length, 
+            topLeagueName: topLeague ? topLeague[0] : "-", 
+            topLeagueCount: topLeague ? topLeague[1] : 0 
+        };
     }).sort((a,b) => b.total - a.total);
 
+    // 2. Skapa separata kollega-listor per vald domare
+    let colleagueGridsHtml = '';
+    
+    // Generera data för varje vald domare
+    const refereeColleagueData = state.selectedReferees.map(refName => {
+        const myMatches = allData.filter(m => m.referees.some(r => r.name === refName));
+        const myCounts = {};
+        
+        myMatches.forEach(m => {
+            m.referees.forEach(r => {
+                // Räkna alla ANDRA domare i matchen
+                if (r.name && r.name !== refName) {
+                    myCounts[r.name] = (myCounts[r.name] || 0) + 1;
+                }
+            });
+        });
+
+        const sorted = Object.entries(myCounts).sort((a,b) => b[1] - a[1]);
+        return { name: refName, colleagues: sorted };
+    });
+
+    // 3. Generera HTML för kollega-sektionen
+    if (refereeColleagueData.length > 0) {
+        // Om vi har fler än 1 domare vald, använd ett grid-layout med 2 kolumner
+        const gridCols = refereeColleagueData.length > 1 ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1";
+        
+        const cardsHtml = refereeColleagueData.map(data => {
+            const hasColleagues = data.colleagues.length > 0;
+            
+            // Skapa listan med kollegor (NU UTAN SIFFROR)
+            const listHtml = hasColleagues 
+                ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+                    ${data.colleagues.map(([cName, count]) => `
+                        <div onclick="goToReferee('${cName}')" class="flex justify-between items-center p-2 rounded bg-dark-surface/50 border border-white/5 hover:border-brand-accent/50 hover:bg-white/5 transition cursor-pointer group">
+                            <div class="flex items-center gap-2 overflow-hidden">
+                                <span class="text-xs text-zinc-300 group-hover:text-white truncate font-medium">${cName}</span>
+                            </div>
+                            <span class="text-[10px] font-bold bg-brand-accent/10 text-brand-accent px-1.5 py-0.5 rounded tabular-nums">${count}</span>
+                        </div>
+                    `).join('')}
+                   </div>`
+                : `<p class="text-zinc-500 text-xs italic py-4 text-center">Inga kollegor registrerade.</p>`;
+
+            return `
+                <div class="glass-card rounded-xl p-4 border-l-4 border-brand-accent/50 flex flex-col h-full">
+                    <div class="flex justify-between items-center mb-3 pb-2 border-b border-white/5">
+                        <h3 class="text-sm font-display font-bold text-white">Dömt ihop med ${data.name}</h3>
+                        <span class="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-zinc-400">${data.colleagues.length} st</span>
+                    </div>
+                    ${listHtml}
+                </div>
+            `;
+        }).join('');
+
+        colleagueGridsHtml = `<div class="grid ${gridCols} gap-4 mb-6 animate-fade-in">${cardsHtml}</div>`;
+    }
+
+    // 4. Bygg ihop hela vyn
     let html = `
     <div class="space-y-6 animate-fade-in">
         <div class="glass-card rounded-2xl p-6">
@@ -782,8 +899,15 @@ function renderRefereeComparison(area, allData) {
                 </table>
             </div>
         </div>
-        <div><h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 ml-1">Matcher</h3>${generateMatchCardsHtml(selectedMatches)}</div>
+
+        ${colleagueGridsHtml}
+
+        <div>
+            <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 ml-1">Matcher <!--(${selectedMatches.length})--></h3>
+            ${generateMatchCardsHtml(selectedMatches)}
+        </div>
     </div>`;
+    
     area.innerHTML = html;
 }
 
@@ -794,7 +918,7 @@ function generateMatchCardsHtml(matches) {
         const isFotboll = m.sport === "fotboll";
         const accent = isFotboll ? "border-emerald-500/30" : "border-blue-500/30";
         const badge = isFotboll ? "text-emerald-400 bg-emerald-500/10" : "text-blue-400 bg-blue-500/10";
-        return `<div class="bg-dark-surface border border-white/5 ${accent} border-l-2 rounded-lg p-3 hover:bg-white/5 transition group"><div class="flex justify-between items-start mb-2"><span onclick="goToSeries('${m.serie}')" class="interactive-text text-[9px] font-bold uppercase tracking-wider ${badge} px-1.5 py-0.5 rounded truncate max-w-[60%]">${m.serie}</span><div class="flex flex-col items-end"><span class="text-[10px] font-mono text-zinc-300 font-bold">${m.date}</span><span class="text-[9px] font-mono text-zinc-500">${m.time}</span></div></div><div class="mb-2"><div class="text-xs font-bold text-zinc-200">${m.home} <span class="text-zinc-600 font-light mx-1">vs</span> ${m.away}</div><div class="text-[10px] text-zinc-500 mt-0.5 flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${m.hall}</div></div><div class="pt-2 border-t border-white/5 flex flex-wrap gap-2">${(m.referees||[]).map(r => `<span onclick="goToReferee('${r.name}')" class="interactive-text text-[10px] text-zinc-400 bg-black/30 px-1.5 py-0.5 rounded border border-white/5 ${state.selectedReferees.includes(r.name) ? 'text-brand-primary border-brand-primary/30' : ''}">${r.name}</span>`).join('')}</div></div>`;
+        return `<div class="bg-dark-surface border border-white/5 ${accent} border-l-2 rounded-lg p-3 hover:bg-white/5 transition group"><div class="flex justify-between items-start mb-2"><span onclick="goToSeries('${m.serie}')" class="interactive-text text-[9px] font-bold uppercase tracking-wider ${badge} px-1.5 py-0.5 rounded truncate max-w-[60%]">${m.serie}</span><div class="flex flex-col items-end"><span class="text-[10px] font-mono text-zinc-300 font-bold">${m.date}</span><span class="text-[9px] font-mono text-zinc-500">${m.time}</span></div></div><div class="mb-2"><div class="text-xs font-bold text-zinc-200">${m.home} <span class="text-zinc-600 font-light mx-1">vs</span> ${m.away}</div><div class="text-[10px] text-zinc-500 mt-0.5 flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${m.hall}</div></div><div class="pt-2 border-t border-white/5 flex flex-wrap gap-2">${(m.referees||[]).map(r => `<span onclick="goToReferee('${r.name}')" class="interactive-text text-[10px] text-zinc-400 bg-black/30 px-1.5 py-0.5 rounded border border-white/5 ${state.selectedReferees.includes(r.name) ? 'text-brand-primary border-brand-primary/30' : ''}"><span class="opacity-50 font-mono mr-1">${r.role}</span>${r.name}</span>`).join('')}</div></div>`;
     }).join("") + `</div>`;
 }
 </script>
