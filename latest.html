@@ -750,8 +750,8 @@ function renderToplist(area, matches) {
     let html = `
     <div class="glass-card rounded-2xl p-4 md:p-6 animate-fade-in">
         <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
-            <h2 class="text-lg font-display font-black text-white">Mest aktiva domare</h2>
-            <span class="text-xs font-bold bg-white/10 px-2 py-1 rounded-full text-zinc-400 tabular-nums">${ranking.length} st</span>
+            <h2 class="text-lg font-display font-black text-white">Antal matcher</h2>
+            <span class="text-xs font-bold bg-white/10 px-2 py-1 rounded-full text-zinc-400 tabular-nums">${ranking.length} domare</span>
         </div>
         <div class="grid grid-cols-12 text-[9px] uppercase tracking-wider text-zinc-500 pb-2 px-2">
             <div class="col-span-6 md:col-span-5">Namn</div>
@@ -793,7 +793,7 @@ function renderLeagueComparison(area, allData) {
                 <div><h3 class="text-lg font-bold text-white">${title}</h3><span class="text-[10px] uppercase text-zinc-500 tracking-widest">${selectedData.length} matcher totalt (${subTitle})</span></div>
             </div>
             <div class="bg-dark-surface/50 rounded-lg p-3">
-                <h4 class="text-[10px] font-bold text-zinc-400 uppercase mb-2">Mest aktiva domare</h4>
+                <h4 class="text-[10px] font-bold text-zinc-400 uppercase mb-2">Antal matcher</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-80 overflow-y-auto custom-scrollbar pr-2">
                         ${sortedRefs.map(([name, count], i) => `<div class="flex justify-between items-center text-xs p-1.5 rounded hover:bg-white/5 border border-white/5"><span onclick="goToReferee('${name}')" class="interactive-text text-zinc-300 truncate pr-2"><span class="text-zinc-600 mr-1.5 w-4 inline-block text-right">${i+1}.</span>${name}</span><span class="font-bold text-white bg-white/10 px-1.5 py-0.5 rounded text-[10px]">${count}</span></div>`).join('')}
                 </div>
