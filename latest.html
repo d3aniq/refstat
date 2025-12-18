@@ -292,8 +292,8 @@ function getShortRole(roleDescription) {
     if (rd.includes("fjärde")) return "4D";
     
     // Futsal (ofta via fotbolls-API)
-    if (rd.includes("först")) return "D1";
-    if (rd.includes("andr")) return "D2";
+    if (rd.includes("först")) return "1D";
+    if (rd.includes("andr")) return "2D";
     if (rd.includes("tredje")) return "3D";
     
     return roleDescription.substring(0, 2).toUpperCase(); // Fallback
