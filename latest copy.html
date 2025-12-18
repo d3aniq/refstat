@@ -123,15 +123,15 @@
 
       <aside class="lg:col-span-3 flex flex-col gap-6 relative z-50">
         
-        <header class="flex flex-col items-center justify-center pt-2">
-            <h1 class="font-display text-4xl tracking-tighter flex items-baseline gap-2">
-                <span class="font-semibold text-zinc-600">DʒaniQ</span>
+        <header onclick="resetToToplist()" class="flex flex-col items-center justify-center pt-2 cursor-pointer group select-none">
+            <h1 class="font-display text-4xl tracking-tighter flex items-baseline gap-2 transition-transform group-hover:scale-[1.02]">
+                <span class="font-semibold text-zinc-600 group-hover:text-zinc-500 transition-colors">DʒaniQ</span>
                 <span class="font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-fuchsia-400 to-white drop-shadow-sm">RefStat</span>
             </h1>
             <div class="flex items-center gap-2 mt-2">
-                <span class="h-px w-6 bg-zinc-700"></span>
-                <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Domare • Data • Insikt</p>
-                <span class="h-px w-6 bg-zinc-700"></span>
+                <span class="h-px w-6 bg-zinc-700 group-hover:bg-brand-primary/50 transition-colors"></span>
+                <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] group-hover:text-zinc-400 transition-colors">Domare • Data • Insikt</p>
+                <span class="h-px w-6 bg-zinc-700 group-hover:bg-brand-primary/50 transition-colors"></span>
             </div>
         </header>
 
@@ -279,7 +279,7 @@ let state = {
 };
 
 // =====================================================================
-// HELPER: ROLE MAPPING
+// HELPER: ROLE MAPPING & UI TOGGLES
 // =====================================================================
 function getShortRole(roleDescription) {
     if (!roleDescription) return "";
@@ -292,11 +292,21 @@ function getShortRole(roleDescription) {
     if (rd.includes("fjärde")) return "4D";
     
     // Futsal (ofta via fotbolls-API)
-    if (rd.includes("först")) return "1D";
-    if (rd.includes("andr")) return "2D";
+    if (rd.includes("först")) return "D1";
+    if (rd.includes("andr")) return "D2";
     if (rd.includes("tredje")) return "3D";
     
     return roleDescription.substring(0, 2).toUpperCase(); // Fallback
+}
+
+// NY FUNKTION: Hanterar expandering av kort
+window.toggleAccordion = function(contentId, iconId) {
+    const content = document.getElementById(contentId);
+    const icon = document.getElementById(iconId);
+    if(content && icon) {
+        content.classList.toggle('hidden');
+        icon.classList.toggle('rotate-180');
+    }
 }
 
 // =====================================================================
@@ -542,6 +552,8 @@ function resetToToplist() {
     pushHistoryState();
     updateMenuUI('Topplista');
     renderResults();
+    
+    document.getElementById("resultArea").scrollIntoView({ behavior: "smooth" });
 }
 
 function goToReferee(name) {
@@ -549,7 +561,6 @@ function goToReferee(name) {
     state.selectedReferees = [name];
     state.selectedSeries = [];
     
-    // FIX: Rensa endast filter-checkboxar
     document.querySelectorAll('input[type="checkbox"][data-type]').forEach(cb => cb.checked = false);
     const cb = document.querySelector(`input[data-type="Domare"][data-val="${name}"]`);
     if(cb) cb.checked = true;
@@ -559,6 +570,8 @@ function goToReferee(name) {
     updateMenuUI('Domare');
     renderResults();
     updateSelectionCount();
+    
+    document.getElementById("resultArea").scrollIntoView({ behavior: "smooth" });
 }
 
 function goToSeries(name) {
@@ -566,7 +579,6 @@ function goToSeries(name) {
     state.selectedSeries = [name];
     state.selectedReferees = [];
     
-    // FIX: Rensa endast filter-checkboxar
     document.querySelectorAll('input[type="checkbox"][data-type]').forEach(cb => cb.checked = false);
     const cb = document.querySelector(`input[data-type="Serier"][data-val="${name}"]`);
     if(cb) cb.checked = true;
@@ -576,6 +588,8 @@ function goToSeries(name) {
     updateMenuUI('Serier');
     renderResults();
     updateSelectionCount();
+    
+    document.getElementById("resultArea").scrollIntoView({ behavior: "smooth" });
 }
 
 // =====================================================================
@@ -807,31 +821,111 @@ function renderLeagueComparison(area, allData) {
     area.innerHTML = html;
 }
 
-// ---- VIEW: REFEREE COMPARISON (UPPDATERAD MED SERIE-STATISTIK) ----
+// ---- VIEW: REFEREE COMPARISON (UPPDATERAD - INGEN TOTAL-BOX) ----
 function renderRefereeComparison(area, allData) {
-    // Filtrera fram matcher där någon av de valda domarna är med
-    const selectedMatches = allData.filter(m => m.referees.some(r => state.selectedReferees.includes(r.name)));
-    
-    // 1. Beräkna statistik för huvudtabellen
-    let stats = state.selectedReferees.map(ref => {
-        const matches = allData.filter(m => m.referees.some(r => r.name === ref));
-        const leagues = {};
-        matches.forEach(m => leagues[m.serie] = (leagues[m.serie]||0)+1);
-        const topLeague = Object.entries(leagues).sort((a,b) => b[1] - a[1])[0];
-        return { 
-            name: ref, 
-            total: matches.length, 
-            fotboll: matches.filter(m => m.sport === 'fotboll').length, 
-            innebandy: matches.filter(m => m.sport === 'innebandy').length, 
-            topLeagueName: topLeague ? topLeague[0] : "-", 
-            topLeagueCount: topLeague ? topLeague[1] : 0 
-        };
-    }).sort((a,b) => b.total - a.total);
+    // Helper för att skapa en liten stat-box (Titel + Värde)
+    const createStatBox = (label, value, colorClass) => `
+        <div class="flex flex-col items-center min-w-[24px]">
+            <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">${label}</span>
+            <span class="text-xs font-bold ${colorClass}">${value}</span>
+        </div>
+    `;
 
-    // 2. Skapa data för både Kollegor OCH Serier per vald domare
-    const refereeDetailData = state.selectedReferees.map(refName => {
+    // Helper för att skapa en grupp (Sport + Stats)
+    const createStatGroup = (title, boxesHtml, borderColor) => `
+        <div class="flex flex-col items-center bg-black/20 rounded px-2 py-1.5 border ${borderColor}">
+            <span class="text-[8px] font-black uppercase text-white/40 tracking-[0.1em] mb-1.5 w-full text-center border-b border-white/5 pb-0.5">${title}</span>
+            <div class="flex gap-3">
+                ${boxesHtml}
+            </div>
+        </div>
+    `;
+
+    const refereeCardsHtml = state.selectedReferees.map((refName, i) => {
         const myMatches = allData.filter(m => m.referees.some(r => r.name === refName));
         
+        // --- 1. SAMLA DATA FÖR HEADER-STATISTIK ---
+        
+        const footballRoles = {}; // HD, AD1, AD2, 4D
+        const futsalRoles = {};   // 1D, 2D, 3D
+        const innebandyRoles = {}; // D1, D2
+
+        myMatches.forEach(m => {
+            const r = m.referees.find(ref => ref.name === refName);
+            if (r && r.role) {
+                const role = r.role.toUpperCase();
+                
+                // KATEGORISERA ROLLER
+                // Futsal
+                if (['1D', '2D', '3D'].includes(role) || (m.sport === 'fotboll' && ['D1', 'D2'].includes(role))) { 
+                    // Ibland kommer Futsal som "D1/D2" från fotbolls-API, ibland 1D/2D
+                    let key = role;
+                    if (key === 'D1') key = '1D'; 
+                    if (key === 'D2') key = '2D';
+                    futsalRoles[key] = (futsalRoles[key] || 0) + 1;
+                }
+                // Innebandy (Hårdkodat som D1/D2 i fetchInnebandy)
+                else if (m.sport === 'innebandy' && ['D1', 'D2'].includes(role)) {
+                     innebandyRoles[role] = (innebandyRoles[role] || 0) + 1;
+                }
+                // Fotboll (Standard)
+                else {
+                    footballRoles[role] = (footballRoles[role] || 0) + 1;
+                }
+            }
+        });
+
+
+        // --- 2. BYGG HTML FÖR HEADER ---
+        let headerStatsHtml = '';
+
+        // Fotboll Group
+        let fbBoxes = '';
+        // Definiera önskad ordning
+        const fbSortOrder = ['HD', 'AD1', 'AD2', '4D']; 
+
+        Object.entries(footballRoles).sort((a, b) => {
+            let indexA = fbSortOrder.indexOf(a[0]);
+            let indexB = fbSortOrder.indexOf(b[0]);
+
+            // Om en roll inte finns i vår lista (får index -1), sätter vi den sist (99)
+            if (indexA === -1) indexA = 99;
+            if (indexB === -1) indexB = 99;
+
+            return indexA - indexB;
+        }).forEach(([role, count]) => {
+            fbBoxes += createStatBox(role, count, 'text-emerald-400');
+        });
+        
+        if (fbBoxes) headerStatsHtml += createStatGroup('FOTBOLL', fbBoxes, 'border-emerald-500/20');
+
+        // Futsal Group
+        let futsalBoxes = '';
+        Object.entries(futsalRoles).sort().forEach(([role, count]) => {
+            futsalBoxes += createStatBox(role, count, 'text-yellow-400');
+        });
+        if (futsalBoxes) headerStatsHtml += createStatGroup('FUTSAL', futsalBoxes, 'border-yellow-500/20');
+
+        // Innebandy Group
+        let ibBoxes = '';
+        Object.entries(innebandyRoles).sort().forEach(([role, count]) => {
+            ibBoxes += createStatBox(role, count, 'text-blue-400');
+        });
+        // Om vi har innebandymatcher men inga roller reggade (fallback)
+        const ibTotal = myMatches.filter(m => m.sport === 'innebandy').length;
+        if (!ibBoxes && ibTotal > 0) {
+             ibBoxes = createStatBox('IB', ibTotal, 'text-blue-400');
+        }
+        
+        if (ibBoxes) headerStatsHtml += createStatGroup('INNEBANDY', ibBoxes, 'border-blue-500/20');
+        
+        // --- 3. RESTRERANDE LOGIK (SORTING & LISTS) ---
+        myMatches.sort((a,b) => { 
+             const dateA = new Date(`${a.date}T${a.time}`); 
+             const dateB = new Date(`${b.date}T${b.time}`); 
+             return dateA - dateB; 
+        });
+
         // Räkna kollegor
         const colCounts = {};
         myMatches.forEach(m => {
@@ -841,120 +935,118 @@ function renderRefereeComparison(area, allData) {
                 }
             });
         });
-        const sortedColleagues = Object.entries(colCounts).sort((a,b) => b[1] - a[1]);
+        const sortedColleagues = Object.entries(colCounts).sort((a,b) => b[1] - a[1]).slice(0, 50);
 
-        // NYTT: Räkna serier
+        // Räkna serier
         const leagueCounts = {};
         myMatches.forEach(m => {
             if (m.serie) {
                 leagueCounts[m.serie] = (leagueCounts[m.serie] || 0) + 1;
             }
         });
-        const sortedLeagues = Object.entries(leagueCounts).sort((a,b) => b[1] - a[1]);
+        const sortedLeagues = Object.entries(leagueCounts).sort((a,b) => b[1] - a[1]).slice(0, 50);
 
-        return { 
-            name: refName, 
-            colleagues: sortedColleagues,
-            leagues: sortedLeagues
-        };
-    });
-
-    // 3. Generera HTML för detalj-korten (Kollegor + Serier)
-    let detailsHtml = '';
-    if (refereeDetailData.length > 0) {
-        // Om fler än 1 domare vald, visa 2 kolumner (en domare per kolumn)
-        const gridCols = refereeDetailData.length > 1 ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1";
+        // IDs & State
+        const seriesId = `series-content-${i}`;
+        const seriesIconId = `series-icon-${i}`;
+        const matchesId = `matches-content-${i}`;
+        const matchesIconId = `matches-icon-${i}`;
+        const colleaguesId = `colleagues-content-${i}`;
+        const colleaguesIconId = `colleagues-icon-${i}`;
         
-        const cardsHtml = refereeDetailData.map(data => {
-            const hasColleagues = data.colleagues.length > 0;
-            const hasLeagues = data.leagues.length > 0;
-            
-            // Kollega-lista
-            const colleaguesListHtml = hasColleagues 
-                ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-1">
-                    ${data.colleagues.map(([cName, count]) => `
-                        <div onclick="goToReferee('${cName}')" class="flex justify-between items-center p-2 rounded bg-dark-surface/50 border border-white/5 hover:border-brand-accent/50 hover:bg-white/5 transition cursor-pointer group">
-                            <span class="text-xs text-zinc-300 group-hover:text-white truncate font-medium pr-2">${cName}</span>
-                            <span class="text-[10px] font-bold bg-brand-accent/10 text-brand-accent px-1.5 py-0.5 rounded tabular-nums flex-shrink-0">${count}</span>
-                        </div>
-                    `).join('')}
-                   </div>`
-                : `<p class="text-zinc-500 text-xs italic py-2 text-center">Inga kollegor.</p>`;
+        const hasColleagues = sortedColleagues.length > 0;
+        const hasLeagues = sortedLeagues.length > 0;
+        const hasMatches = myMatches.length > 0;
 
-            // Serie-lista (NY)
-            const leaguesListHtml = hasLeagues 
-                ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-1">
-                    ${data.leagues.map(([lName, count]) => `
-                        <div onclick="goToSeries('${lName}')" class="flex justify-between items-center p-2 rounded bg-dark-surface/50 border border-white/5 hover:border-brand-primary/50 hover:bg-white/5 transition cursor-pointer group">
-                            <span class="text-xs text-zinc-300 group-hover:text-white truncate font-medium pr-2">${lName}</span>
-                            <span class="text-[10px] font-bold bg-brand-primary/10 text-brand-primary px-1.5 py-0.5 rounded tabular-nums flex-shrink-0">${count}</span>
-                        </div>
-                    `).join('')}
-                   </div>`
-                : `<p class="text-zinc-500 text-xs italic py-2 text-center">Inga serier.</p>`;
-
-            return `
-                <div class="glass-card rounded-xl p-0 border-l-4 border-white/10 flex flex-col overflow-hidden">
-                    <div class="p-4 bg-white/5 border-b border-white/5">
-                        <h3 class="text-base font-display font-bold text-white">${data.name}</h3>
+        // List HTML Generators
+        const colleaguesListHtml = hasColleagues 
+            ? `<div id="${colleaguesId}" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-1 mt-2">
+                ${sortedColleagues.map(([cName, count]) => `
+                    <div onclick="goToReferee('${cName}')" class="flex justify-between items-center p-2 rounded bg-dark-surface/50 border border-white/5 hover:border-brand-accent/50 hover:bg-white/5 transition cursor-pointer group">
+                        <span class="text-xs text-zinc-300 group-hover:text-white truncate font-medium pr-2">${cName}</span>
+                        <span class="text-[10px] font-bold bg-brand-accent/10 text-brand-accent px-1.5 py-0.5 rounded tabular-nums flex-shrink-0">${count}</span>
                     </div>
+                `).join('')}
+               </div>`
+            : `<p class="text-zinc-500 text-xs italic py-2 text-center">Inga kollegor registrerade.</p>`;
+
+        const leaguesListHtml = hasLeagues 
+            ? `<div id="${seriesId}" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-1 mt-2">
+                ${sortedLeagues.map(([lName, count]) => `
+                    <div onclick="goToSeries('${lName}')" class="flex justify-between items-center p-2 rounded bg-dark-surface/50 border border-white/5 hover:border-brand-primary/50 hover:bg-white/5 transition cursor-pointer group">
+                        <span class="text-xs text-zinc-300 group-hover:text-white truncate font-medium pr-2">${lName}</span>
+                        <span class="text-[10px] font-bold bg-brand-primary/10 text-brand-primary px-1.5 py-0.5 rounded tabular-nums flex-shrink-0">${count}</span>
+                    </div>
+                `).join('')}
+               </div>`
+            : `<p class="text-zinc-500 text-xs italic py-2 text-center">Inga serier registrerade.</p>`;
+
+        const matchesListHtml = hasMatches
+            ? `<div id="${matchesId}" class="hidden mt-3 max-h-96 overflow-y-auto custom-scrollbar pr-1">
+                 ${generateMatchCardsHtml(myMatches)}
+               </div>`
+            : `<p class="text-zinc-500 text-xs italic py-2 text-center">Inga matcher.</p>`;
+
+
+        // --- RENDERA KORTET ---
+        return `
+            <div class="glass-card rounded-xl p-0 border-l-4 border-white/10 flex flex-col overflow-hidden animate-fade-in">
+                <div class="p-4 bg-white/5 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <h3 class="text-lg font-display font-bold text-white mb-1 sm:mb-0">${refName}</h3>
                     
-                    <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div>
-                            <div class="flex justify-between items-center mb-2 pb-1 border-b border-white/5">
-                                <span class="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Serier</span>
-                                <span class="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-zinc-400">${data.leagues.length}</span>
-                            </div>
-                            ${leaguesListHtml}
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between items-center mb-2 pb-1 border-b border-white/5">
-                                <span class="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Kollegor</span>
-                                <span class="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-zinc-400">${data.colleagues.length}</span>
-                            </div>
-                            ${colleaguesListHtml}
-                        </div>
-
-
+                    <div class="flex flex-wrap gap-2 items-stretch">
+                        ${headerStatsHtml}
                     </div>
                 </div>
-            `;
-        }).join('');
+                
+                <div class="p-4 grid grid-cols-1 gap-4">
+                    <div>
+                        <button onclick="toggleAccordion('${seriesId}', '${seriesIconId}')" class="w-full flex justify-between items-center mb-1 pb-1 border-b border-white/5 group hover:bg-white/5 p-1 rounded transition">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold uppercase text-zinc-500 tracking-wider group-hover:text-white">Serier</span>
+                                <span class="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-zinc-400">${sortedLeagues.length}</span>
+                            </div>
+                            <svg id="${seriesIconId}" class="w-4 h-4 text-zinc-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        ${leaguesListHtml}
+                    </div>
 
-        detailsHtml = `<div class="grid ${gridCols} gap-4 mb-6 animate-fade-in">${cardsHtml}</div>`;
-    }
+                     <div>
+                        <button onclick="toggleAccordion('${matchesId}', '${matchesIconId}')" class="w-full flex justify-between items-center mb-1 pb-1 border-b border-white/5 group hover:bg-white/5 p-1 rounded transition">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold uppercase text-zinc-500 tracking-wider group-hover:text-white">Matcher</span>
+                                <span class="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-zinc-400">${myMatches.length}</span>
+                            </div>
+                            <svg id="${matchesIconId}" class="w-4 h-4 text-zinc-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        ${matchesListHtml}
+                    </div>
 
-    // 4. Bygg ihop hela vyn
-    let html = `
-    <div class="space-y-6 animate-fade-in">
-        <div class="glass-card rounded-2xl p-6">
-            <h2 class="text-xl font-display font-black text-white mb-4">Översikt</h2>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead><tr class="text-[10px] uppercase text-zinc-500 border-b border-white/10"><th class="pb-2 pl-2">Namn</th><th class="pb-2 text-center">Totalt</th><th class="pb-2 text-center">Fotboll</th><th class="pb-2 text-center">Innebandy</th></tr></thead>
-                    <tbody class="text-xs font-medium text-zinc-300">
-                        ${stats.map(s => `<tr class="border-b border-white/5 hover:bg-white/5 transition"><td class="py-3 pl-2 font-bold text-white text-sm">${s.name}</td><td class="py-3 text-center"><span class="bg-white/10 text-white px-2 py-1 rounded font-bold">${s.total}</span></td><td class="py-3 text-center text-zinc-500">${s.fotboll || '-'}</td><td class="py-3 text-center text-zinc-500">${s.innebandy || '-'}</td></tr>`).join('')}
-                    </tbody>
-                </table>
+                    <div>
+                        <button onclick="toggleAccordion('${colleaguesId}', '${colleaguesIconId}')" class="w-full flex justify-between items-center mb-1 pb-1 border-b border-white/5 group hover:bg-white/5 p-1 rounded transition">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold uppercase text-zinc-500 tracking-wider group-hover:text-white">Kollegor</span>
+                                <span class="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-zinc-400">${sortedColleagues.length}</span>
+                            </div>
+                            <svg id="${colleaguesIconId}" class="w-4 h-4 text-zinc-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        ${colleaguesListHtml}
+                    </div>
+                </div>
             </div>
-        </div>
+        `;
+    }).join('');
 
-        ${detailsHtml}
-
-        <div>
-            <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 ml-1">Matcher </h3>
-            ${generateMatchCardsHtml(selectedMatches)}
-        </div>
-    </div>`;
-    
-    area.innerHTML = html;
+    area.innerHTML = `<div class="space-y-6">${refereeCardsHtml}</div>`;
 }
 
 function generateMatchCardsHtml(matches) {
     if(!matches || matches.length === 0) return '<p class="text-zinc-500 text-sm">Inga matcher.</p>';
+    // We sort here too just in case it's used elsewhere, though sorting is done upstream for referee view
     const sortedMatches = matches.sort((a,b) => { const dateA = new Date(`${a.date}T${a.time}`); const dateB = new Date(`${b.date}T${b.time}`); return dateA - dateB; });
-    return `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">` + sortedMatches.map(m => {
+    
+    // Changed grid-cols to 1 by default inside the accordion context, but keeping md:grid-cols-2 if space allows (e.g. tablet view)
+    return `<div class="grid grid-cols-1 gap-3">` + sortedMatches.map(m => {
         const isFotboll = m.sport === "fotboll";
         const accent = isFotboll ? "border-emerald-500/30" : "border-blue-500/30";
         const badge = isFotboll ? "text-emerald-400 bg-emerald-500/10" : "text-blue-400 bg-blue-500/10";
