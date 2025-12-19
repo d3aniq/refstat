@@ -745,44 +745,117 @@ function renderResults() {
     }
 }
 
-// ---- VIEW: MEST AKTIVA DOMARE ----
+// ---- VIEW: MEST AKTIVA DOMARE (DYNAMISKA KOLUMNER - TOPP 50) ----
 function renderToplist(area, matches) {
     let counter = {};
+    
+    // 1. Aggregera data
     matches.forEach(m => {
         m.referees.forEach(r => {
             if (r.name) {
-                if (!counter[r.name]) counter[r.name] = { total: 0, fotboll: 0, innebandy: 0 };
+                if (!counter[r.name]) {
+                    counter[r.name] = { 
+                        total: 0, 
+                        'HD': 0, 'AD1': 0, 'AD2': 0, '4D': 0,
+                        '1D': 0, '2D': 0, '3D': 0,
+                        'D1': 0, 'D2': 0
+                    };
+                }
+                
                 counter[r.name].total++;
-                if(m.sport === 'fotboll') counter[r.name].fotboll++;
-                if(m.sport === 'innebandy') counter[r.name].innebandy++;
+                
+                let role = r.role ? r.role.toUpperCase() : '';
+                
+                // Normalisera Futsal
+                if (role === 'D1' && m.sport === 'fotboll') role = '1D'; 
+                if (role === 'D2' && m.sport === 'fotboll') role = '2D';
+
+                if (counter[r.name].hasOwnProperty(role)) {
+                    counter[r.name][role]++;
+                } 
             }
         });
     });
     
     let ranking = Object.entries(counter).sort((a,b) => b[1].total - a[1].total);
 
+    // 2. Kontrollera vilka kolumner som har data
+    const hasData = {
+        'HD': false, 'AD1': false, 'AD2': false, '4D': false,
+        '1D': false, '2D': false, '3D': false,
+        'D1': false, 'D2': false
+    };
+
+    ranking.forEach(([_, data]) => {
+        for (const key in hasData) {
+            if (data[key] > 0) hasData[key] = true;
+        }
+    });
+
+    // 3. Definiera kolumngrupper
+    const fbCols = ['HD', 'AD1', 'AD2', '4D'].filter(k => hasData[k]);
+    const futCols = ['1D', '2D', '3D'].filter(k => hasData[k]);
+    const ibCols = ['D1', 'D2'].filter(k => hasData[k]);
+
+    // Grid config
+    // Har ökat bredden för Totalt-kolumnen något (45px) för att texten ska få plats snyggt
+    const gridStyle = `grid-template-columns: minmax(100px, 2fr) 45px ${fbCols.map(()=>'1fr').join(' ')} ${futCols.map(()=>'1fr').join(' ')} ${ibCols.map(()=>'1fr').join(' ')};`;
+
+    const val = (num, color) => num > 0 ? `<span class="font-bold ${color}">${num}</span>` : `<span class="text-zinc-800">-</span>`;
+
+    // Helpers
+    const renderHeaderGroup = (title, cols, colorClass, borderColor) => {
+        if (cols.length === 0) return '';
+        const spanStyle = `grid-column: span ${cols.length}`;
+        return `
+            <div style="${spanStyle}" class="text-center border-l border-white/5">
+                <div class="${colorClass} mb-0.5 text-[7px]">${title}</div>
+                <div class="grid" style="grid-template-columns: repeat(${cols.length}, 1fr)">
+                    ${cols.map(c => `<span>${c}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    };
+
+    const renderDataCells = (dataObj, cols, colorClass) => {
+        if (cols.length === 0) return '';
+        return cols.map(col => `<div class="text-center border-l border-white/5 h-full flex items-center justify-center">${val(dataObj[col], colorClass)}</div>`).join('');
+    };
+
+
     let html = `
     <div class="glass-card rounded-2xl p-4 md:p-6 animate-fade-in">
         <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
-            <h2 class="text-lg font-display font-black text-white">Antal matcher</h2>
             <span class="text-xs font-bold bg-white/10 px-2 py-1 rounded-full text-zinc-400 tabular-nums">${ranking.length} domare</span>
+            <h2 class="text-lg font-display font-black text-white">Antal matcher</h2>
         </div>
-        <div class="grid grid-cols-12 text-[9px] uppercase tracking-wider text-zinc-500 pb-2 px-2">
-            <div class="col-span-6 md:col-span-5">Namn</div>
-            <div class="col-span-2 text-center text-emerald-500/80">Fotboll</div>
-            <div class="col-span-2 text-center text-blue-500/80">Innebandy</div>
-            <div class="col-span-2 text-center text-white">Totalt</div>
+        
+        <div class="grid gap-1 text-[8px] uppercase tracking-wider text-zinc-500 pb-2 px-2 border-b border-white/5 mb-1 items-end" style="${gridStyle}">
+            <div class="text-left font-bold">Namn</div>
+            <div class="text-center text-white font-bold">Totalt</div>
+            
+            ${renderHeaderGroup('Fotboll', fbCols, 'text-emerald-500/50')}
+            ${renderHeaderGroup('Futsal', futCols, 'text-yellow-500/50')}
+            ${renderHeaderGroup('Innebandy', ibCols, 'text-blue-500/50')}
         </div>
-        <div class="flex flex-col gap-1">
-            ${ranking.slice(0, 50).map(([name, data], i) => {
-                return `<div class="grid grid-cols-12 items-center p-2 rounded bg-dark-surface/30 hover:bg-white/5 border border-transparent hover:border-white/5 transition group">
-                    <div class="col-span-6 md:col-span-5 flex items-center gap-3 overflow-hidden">
-                        <span class="w-6 text-right text-zinc-600 font-mono text-xs flex-shrink-0">${i+1}.</span>
-                        <span onclick="goToReferee('${name}')" class="interactive-text font-bold text-xs md:text-sm text-zinc-300 group-hover:text-white truncate">${name}</span>
+
+        <div class="flex flex-col gap-1 max-h-[600px] overflow-y-auto custom-scrollbar pr-1">
+            ${ranking.slice(0, 50).map(([name, d], i) => {
+                return `<div class="grid gap-1 items-center p-2 rounded bg-dark-surface/30 hover:bg-white/5 border border-transparent hover:border-white/5 transition group text-[10px]" style="${gridStyle}">
+                    
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <span class="text-zinc-600 font-mono text-[9px] w-3 text-right flex-shrink-0">${i+1}.</span>
+                        <span onclick="goToReferee('${name}')" class="interactive-text font-bold text-zinc-300 group-hover:text-white truncate" title="${name}">${name}</span>
                     </div>
-                    <div class="col-span-2 text-center">${data.fotboll > 0 ? `<span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-1.5 py-0.5 rounded tabular-nums">${data.fotboll}</span>` : '<span class="text-zinc-700 text-[10px]">-</span>'}</div>
-                    <div class="col-span-2 text-center">${data.innebandy > 0 ? `<span class="bg-blue-500/10 text-blue-400 text-[10px] font-bold px-1.5 py-0.5 rounded tabular-nums">${data.innebandy}</span>` : '<span class="text-zinc-700 text-[10px]">-</span>'}</div>
-                    <div class="col-span-2 text-center"><span class="bg-zinc-800 text-white px-2 py-0.5 rounded text-xs font-black min-w-[2rem] inline-block shadow-lg tabular-nums">${data.total}</span></div>
+
+                    <div class="text-center">
+                        <span class="bg-white/10 text-white px-1.5 py-0.5 rounded font-bold text-[9px]">${d.total}</span>
+                    </div>
+
+                    ${renderDataCells(d, fbCols, 'text-emerald-400')}
+                    ${renderDataCells(d, futCols, 'text-yellow-400')}
+                    ${renderDataCells(d, ibCols, 'text-blue-400')}
+
                 </div>`;
             }).join('')}
         </div>
