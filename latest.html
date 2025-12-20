@@ -778,7 +778,7 @@ function renderResults() {
     }
 }
 
-// ---- VIEW: MEST AKTIVA DOMARE (ENKEL: STÖRRE TEXT & LUFTIGARE) ----
+// ---- VIEW: MEST AKTIVA DOMARE (RESPONSIV: BALANSERAD STORLEK) ----
 function renderToplist(area, matches) {
     let counter = {};
     
@@ -825,26 +825,27 @@ function renderToplist(area, matches) {
     const showFutsal = top50.some(([_, d]) => d.futsal > 0);
     const showInnebandy = top50.some(([_, d]) => d.innebandy > 0);
 
-    // 4. Grid Layout - BREDDADE KOLUMNER
-    // Namn får mer plats (140px min), Totalt får 60px
-    let gridTemplate = `minmax(140px, 3fr) 60px`; 
+    // 4. Grid Layout - Balanserad för mobil/desktop
+    // 110px min bredd för namn räcker för mobil, expanderar på desktop. 
+    // 50px för Totalt är kompakt och snyggt.
+    let gridTemplate = `minmax(110px, 3fr) 50px`; 
     if (showFotboll) gridTemplate += ` 1fr`;
     if (showFutsal) gridTemplate += ` 1fr`;
     if (showInnebandy) gridTemplate += ` 1fr`;
 
     const gridStyle = `grid-template-columns: ${gridTemplate};`;
     
-    // Helper för siffror (Nu med text-xs istället för text-[9px])
-    const val = (num, color) => num > 0 ? `<span class="font-bold ${color}">${num}</span>` : `<span class="text-zinc-700 font-medium">-</span>`;
+    // Helper för siffror (Responsive textstorlek)
+    const val = (num, color) => num > 0 ? `<span class="font-bold ${color}">${num}</span>` : `<span class="text-zinc-700 text-[10px]">-</span>`;
 
     let html = `
     <div class="glass-card rounded-2xl p-4 md:p-6 animate-fade-in">
-        <div class="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
-            <span class="text-xs font-bold bg-white/10 px-3 py-1 rounded-full text-zinc-300 tabular-nums">${totalCount} domare</span>
-            <h2 class="text-xl font-display font-black text-white">Antal matcher</h2>
+        <div class="flex items-center justify-between mb-5 border-b border-white/10 pb-3">
+            <span class="text-xs font-bold bg-white/10 px-2.5 py-1 rounded-full text-zinc-300 tabular-nums">${totalCount} domare</span>
+            <h2 class="text-lg sm:text-xl font-display font-black text-white">Antal matcher</h2>
         </div>
         
-        <div class="grid gap-2 text-xs uppercase tracking-wider text-zinc-500 pb-3 px-3 border-b border-white/5 mb-2 items-end font-bold" style="${gridStyle}">
+        <div class="grid gap-2 text-[10px] sm:text-xs uppercase tracking-wider text-zinc-500 pb-2 px-2 border-b border-white/5 mb-2 items-end font-bold" style="${gridStyle}">
             <div class="text-left">Namn</div>
             <div class="text-center text-white">Totalt</div>
             
@@ -853,27 +854,27 @@ function renderToplist(area, matches) {
             ${showInnebandy ? `<div class="text-center text-blue-500/90">Innebandy</div>` : ''}
         </div>
 
-        <div class="flex flex-col gap-1.5">
+        <div class="flex flex-col gap-1 sm:gap-1.5">
             ${top50.map(([name, d], i) => {
-                return `<div class="grid gap-2 items-center p-3 rounded-lg bg-dark-surface/40 hover:bg-white/5 border border-transparent hover:border-white/10 transition group text-sm" style="${gridStyle}">
+                return `<div class="grid gap-2 items-center p-2 sm:p-3 rounded-lg bg-dark-surface/40 hover:bg-white/5 border border-transparent hover:border-white/10 transition group" style="${gridStyle}">
                     
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <span class="text-zinc-500 font-mono text-xs w-5 text-right flex-shrink-0">${i+1}.</span>
-                        <span onclick="goToReferee('${name}')" class="interactive-text font-bold text-zinc-200 group-hover:text-white truncate text-sm md:text-base" title="${name}">${name}</span>
+                    <div class="flex items-center gap-2 sm:gap-3 overflow-hidden">
+                        <span class="text-zinc-500 font-mono text-[10px] sm:text-xs w-4 sm:w-5 text-right flex-shrink-0">${i+1}.</span>
+                        <span onclick="goToReferee('${name}')" class="interactive-text font-bold text-zinc-200 group-hover:text-white truncate text-xs sm:text-sm" title="${name}">${name}</span>
                     </div>
 
                     <div class="text-center">
-                        <span class="bg-zinc-800 text-white px-2.5 py-1 rounded-md font-black text-xs md:text-sm shadow-lg border border-white/5">${d.total}</span>
+                        <span class="bg-zinc-800 text-white px-2 py-0.5 sm:py-1 rounded-md font-black text-[10px] sm:text-xs shadow-lg border border-white/5">${d.total}</span>
                     </div>
 
-                    ${showFotboll ? `<div class="text-center">${val(d.fotboll, 'text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-xs md:text-sm')}</div>` : ''}
-                    ${showFutsal ? `<div class="text-center">${val(d.futsal, 'text-yellow-400 bg-yellow-500/10 px-2 py-0.5 rounded text-xs md:text-sm')}</div>` : ''}
-                    ${showInnebandy ? `<div class="text-center">${val(d.innebandy, 'text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded text-xs md:text-sm')}</div>` : ''}
+                    ${showFotboll ? `<div class="text-center">${val(d.fotboll, 'text-emerald-400 bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs')}</div>` : ''}
+                    ${showFutsal ? `<div class="text-center">${val(d.futsal, 'text-yellow-400 bg-yellow-500/10 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs')}</div>` : ''}
+                    ${showInnebandy ? `<div class="text-center">${val(d.innebandy, 'text-blue-400 bg-blue-500/10 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs')}</div>` : ''}
 
                 </div>`;
             }).join('')}
         </div>
-        ${totalCount > 50 ? '<p class="text-center text-xs text-zinc-600 mt-6 font-medium">Visar topp 50</p>' : ''}
+        ${totalCount > 50 ? '<p class="text-center text-xs text-zinc-600 mt-5 font-medium">Visar topp 50</p>' : ''}
     </div>`;
     
     area.innerHTML = html;
