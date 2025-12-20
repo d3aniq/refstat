@@ -248,7 +248,7 @@
              <p class="text-[10px] text-zinc-600 leading-relaxed">
                  All data är från <a href="https://www.svenskfotboll.se" target="_blank" class="hover:text-zinc-400 transition underline decoration-zinc-700 underline-offset-2">svenskfotboll.se</a> och <a href="https://www.innebandy.se" target="_blank" class="hover:text-zinc-400 transition underline decoration-zinc-700 underline-offset-2">innebandy.se</a>
                  <br>
-                 Ingen personlig data lagras. Kontakt <a href="mailto:refstat@dzanic.se" class="hover:text-brand-primary transition font-medium">refstat@dzanic.se</a>
+                 Ingen personlig data lagras. Kontakt <a href="mailto:info@refstat.se" class="hover:text-brand-primary transition font-medium">info@refstat.se</a>
              </p>
         </footer>
       </main>
@@ -719,29 +719,26 @@ function updateSelectionCount() {
     const d = state.selectedReferees.length;
     
     const parts = [];
-    let lastCount = 0; // Håller koll på antalet för det sista ordet för att styra "vald/valda"
 
-    // 1. Lägg till Domare om några är valda
+    // 1. Lägg till Domare
     if (d > 0) {
         parts.push(`${d} domare`);
-        lastCount = d;
     }
 
-    // 2. Lägg till Serier om några är valda
+    // 2. Lägg till Serier
     if (s > 0) {
         const noun = s === 1 ? "serie" : "serier";
         parts.push(`${s} ${noun}`);
-        lastCount = s;
     }
 
     const infoEl = document.getElementById("selectionInfo");
 
     if (parts.length > 0) {
-        // Slå ihop delarna med " & " om båda finns
+        // Slå ihop delarna med " & "
         const text = parts.join(" & ");
         
-        // Bestäm suffix baserat på det sista antalet (t.ex. "...1 serie vald" vs "...2 serier valda")
-        const suffix = lastCount === 1 ? "vald" : "valda";
+        // NY LOGIK: Om någon kategori (d eller s) är större än 1 -> "valda", annars "vald"
+        const suffix = (d > 1 || s > 1) ? "valda" : "vald";
 
         document.getElementById("selectionCount").textContent = `${text} ${suffix}`;
         infoEl.classList.remove('hidden');
@@ -880,6 +877,117 @@ function renderToplist(area, matches) {
         ${totalCount > 50 ? '<p class="text-center text-xs text-zinc-600 mt-4">Visar topp 50</p>' : ''}
     </div>`;
     
+    area.innerHTML = html;
+}
+
+// ---- VIEW: LEAGUE COMPARISON (ACCORDION - WITH SERIES TAGS) ----
+function renderLeagueComparison(area, allData) {
+    const selectedData = allData.filter(m => state.selectedSeries.includes(m.serie));
+    
+    // 1. Gruppera data
+    const refData = {};
+    selectedData.forEach(m => {
+        m.referees.forEach(r => {
+            if (r.name) {
+                if (!refData[r.name]) {
+                    refData[r.name] = { count: 0, matches: [] };
+                }
+                refData[r.name].count++;
+                refData[r.name].matches.push(m);
+            }
+        });
+    });
+
+    const sortedRefs = Object.entries(refData).sort((a,b) => b[1].count - a[1].count);
+    
+    // 2. Hantera Titlar och Serielista
+    const isMulti = true; //state.selectedSeries.length > 1;
+    const title = isMulti ? "" : state.selectedSeries[0];
+    
+    // Generera HTML för serietaggar om fler än 1 är vald
+    let seriesTagsHtml = '';
+    if (isMulti) {
+        seriesTagsHtml = `
+        <div class="mt-2 flex flex-wrap gap-1.5">
+            ${state.selectedSeries.sort().map(s => 
+                `<span class="text-[9px] font-medium text-zinc-400 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded">${s}</span>`
+            ).join('')}
+        </div>`;
+    }
+
+    let html = `
+    <div class="space-y-6 animate-fade-in">
+        <div class="glass-card rounded-xl p-5 border-l-4 border-brand-primary">
+            <div class="flex justify-between items-start mb-4 border-b border-white/10 pb-3">
+                <div class="flex-1"> <h3 class="text-lg font-bold text-white leading-tight">${title}</h3>
+                    <span class="text-[10px] uppercase text-zinc-500 tracking-widest block mt-0.5">
+                        ${selectedData.length} matcher totalt
+                    </span>
+                    ${seriesTagsHtml}
+                </div>
+            </div>
+
+            <div class="bg-dark-surface/50 rounded-lg p-3">
+                <h4 class="text-[10px] font-bold text-zinc-400 uppercase mb-2">Antal matcher</h4>
+                
+                <div class="flex flex-col gap-2">
+                    ${sortedRefs.map(([name, data], i) => {
+                        const contentId = `league-ref-content-${i}`;
+                        const iconId = `league-ref-icon-${i}`;
+                        
+                        // --- FÄRGLOGIK ---
+                        let hasFotboll = false;
+                        let hasFutsal = false;
+                        let hasInnebandy = false;
+
+                        data.matches.forEach(m => {
+                            if (m.sport === 'innebandy') {
+                                hasInnebandy = true;
+                            } else if (m.sport === 'fotboll') {
+                                const isFutsalMatch = m.referees.some(r => ['1D', '2D', '3D', 'D1', 'D2'].includes(r.role?.toUpperCase()));
+                                if (isFutsalMatch) hasFutsal = true;
+                                else hasFotboll = true;
+                            }
+                        });
+
+                        let badgeClass = "bg-brand-accent/10 text-brand-accent"; 
+                        if (hasFutsal && !hasFotboll && !hasInnebandy) {
+                            badgeClass = "bg-yellow-500/10 text-yellow-400";
+                        } else if (hasFotboll && !hasFutsal && !hasInnebandy) {
+                            badgeClass = "bg-emerald-500/10 text-emerald-400";
+                        } else if (hasInnebandy && !hasFotboll && !hasFutsal) {
+                            badgeClass = "bg-blue-500/10 text-blue-400";
+                        }
+                        // --- SLUT FÄRGLOGIK ---
+
+                        return `
+                        <div class="bg-dark-surface border border-white/5 rounded-lg overflow-hidden transition-colors hover:border-white/10">
+                            <div class="w-full flex justify-between items-center p-3 hover:bg-white/5 transition group relative">
+                                
+                                <div class="flex items-center gap-3 overflow-hidden flex-1 cursor-pointer" onclick="toggleAccordion('${contentId}', '${iconId}')">
+                                    <span class="text-zinc-600 font-mono text-xs w-5 text-right flex-shrink-0">${i+1}.</span>
+                                    <span class="text-sm font-bold text-zinc-300 group-hover:text-white truncate">${name}</span>
+                                </div>
+
+                                <div class="flex items-center gap-3 cursor-pointer" onclick="toggleAccordion('${contentId}', '${iconId}')">
+                                    <span class="${badgeClass} px-2 py-0.5 rounded text-[10px] font-bold tabular-nums transition-colors">
+                                        ${data.count}
+                                    </span>
+                                    <svg id="${iconId}" class="w-4 h-4 text-zinc-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div id="${contentId}" class="hidden bg-black/20 border-t border-white/5 p-2">
+                                ${generateMatchCardsHtml(data.matches)}
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>
+        </div>
+    </div>`;
     area.innerHTML = html;
 }
 
