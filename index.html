@@ -428,6 +428,7 @@ function validateForm() {
 // DATA LOADING
 // =====================================================================
 async function loadData() {
+    // ... (Din kod för att hämta element och sätta loading-state är densamma) ...
     const from = document.getElementById("dateFrom").value;
     const to = document.getElementById("dateTo").value;
     const btn = document.getElementById("btnLoad");
@@ -435,6 +436,7 @@ async function loadData() {
     const lb = document.getElementById("loadingBar");
     const lp = document.getElementById("loadingPercent");
 
+    // UI Feedback
     btn.innerHTML = `<svg class="animate-spin h-4 w-4 inline mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>HÄMTAR...`;
     btn.disabled = true;
     lc.classList.remove("hidden");
@@ -447,6 +449,7 @@ async function loadData() {
     state.selectedReferees = [];
 
     try {
+        // Skapa datumlista
         let start = new Date(from);
         let end = new Date(to);
         const days = [];
@@ -456,15 +459,40 @@ async function loadData() {
 
         const fotFedId = document.getElementById("selectFotboll").value;
         const innFedId = document.getElementById("selectInnebandy").value;
+        const activeFot = state.active.fotboll;
+        const activeInn = state.active.innebandy;
 
         const BATCH_SIZE = 5; 
+        
         for (let i = 0; i < days.length; i += BATCH_SIZE) {
             const batch = days.slice(i, i + BATCH_SIZE);
-            const promises = [];
-            batch.forEach(date => {
-                if (state.active.fotboll) promises.push(fetchFotboll(date, fotFedId).then(res => state.fotboll.push(...res)));
-                if (state.active.innebandy) promises.push(fetchInnebandy(date, innFedId).then(res => state.innebandy.push(...res)));
+            
+            // HÄR ÄR DEN NYA MAGIN:
+            const promises = batch.map(date => {
+                
+                // 1. Båda sporter valda -> Kör "all"
+                if (activeFot && activeInn) {
+                    const url = `https://refstat-test.jasmin-e21.workers.dev/?sport=all&date=${date}&fed_fotboll=${fotFedId}&fed_innebandy=${innFedId}`;
+                    return fetch(url).then(r => r.json()).then(data => {
+                        // Workern returnerar objektet { fotboll: ..., innebandy: ... }
+                        if(data.fotboll) processFotbollData(data.fotboll);
+                        if(data.innebandy) processInnebandyData(data.innebandy);
+                    });
+                }
+                
+                // 2. Bara Fotboll
+                else if (activeFot) {
+                    const url = `https://refstat-test.jasmin-e21.workers.dev/?sport=fotboll&date=${date}&fed=${fotFedId}`;
+                    return fetch(url).then(r => r.json()).then(data => processFotbollData(data));
+                }
+                
+                // 3. Bara Innebandy
+                else if (activeInn) {
+                    const url = `https://refstat-test.jasmin-e21.workers.dev/?sport=innebandy&date=${date}&fed=${innFedId}`;
+                    return fetch(url).then(r => r.json()).then(data => processInnebandyData(data));
+                }
             });
+
             await Promise.all(promises);
             
             const progress = Math.min(100, Math.round(((i + BATCH_SIZE) / days.length) * 100));
@@ -477,60 +505,58 @@ async function loadData() {
         
         renderFilterList('Serier');
         renderFilterList('Domare');
-        
         setMode("Topplista");
 
     } catch (error) {
-        alert("Ett fel inträffade vid hämtning av data.");
+        console.error(error);
+        alert("Ett fel inträffade. Kontrollera konsolen.");
     } finally {
         btn.innerHTML = "STATISTIK LADDAD";
         setTimeout(() => { lc.classList.add("hidden"); btn.disabled = false; btn.innerText = "UPPDATERA"; }, 500);
     }
 }
 
-async function fetchFotboll(date, fed) {
-  const url = `https://www.gbgfotboll.se/api/matches-today/games/?showReferees=true&associationId=${fed}&date=${date}`;
-  try {
-    const res = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
-    if(!res.ok) return [];
-    const data = await res.json();
-    let out = [];
-    (data.competitions || []).forEach(comp => {
-      (comp.games || []).forEach(g => {
-        out.push({
-          sport: "fotboll", serie: comp.name, date: g.date.slice(0,10), time: g.date.slice(11,16), hall: g.location, home: g.homeTeam?.name, away: g.awayTeam?.name,
-          referees: (g.referees || []).map(r => ({ name: r.name, role: getShortRole(r.roleDescription) }))
-        });
-      });
-    });
-    return out;
-  } catch(e) { return []; }
-}
-
-async function fetchInnebandy(date, fed) {
-  const url = `https://refstat-test.jasmin-e21.workers.dev/?date=${date}&fed=${fed}`;
-  try {
-    const res = await fetch(url);
-    if(!res.ok) return [];
-    const data = await res.json();
-    let out = [];
-    if(Array.isArray(data)) {
-        data.forEach(block => {
-          if(block.Matches) {
-              block.Matches.forEach(m => {
-                out.push({
-                  sport: "innebandy", serie: block.Name, date: m.MatchDateTime.slice(0,10), time: m.MatchDateTime.slice(11,16), hall: m.Venue, home: m.HomeTeam, away: m.AwayTeam,
-                  referees: [
-                      { name: m.Referee1, role: "D1" }, 
-                      { name: m.Referee2, role: "D2" }
-                  ]
+// Hjälpfunktioner för att hantera/pusha datan (så vi slipper duplicera kod)
+function processFotbollData(data) {
+    if (!data || data.error) return;
+    // Svensk fotboll struktur
+    if (data.competitions && Array.isArray(data.competitions)) {
+        data.competitions.forEach(comp => {
+            (comp.games || []).forEach(g => {
+                state.fotboll.push({
+                    sport: "fotboll", 
+                    serie: comp.name, 
+                    date: g.date.slice(0,10), 
+                    time: g.date.slice(11,16), 
+                    hall: g.location, 
+                    home: g.homeTeam?.name, 
+                    away: g.awayTeam?.name,
+                    referees: (g.referees || []).map(r => ({ name: r.name, role: getShortRole(r.roleDescription) }))
                 });
-              });
-          }
+            });
         });
     }
-    return out;
-  } catch(e) { return []; }
+}
+
+function processInnebandyData(data) {
+    if (!data || data.error) return;
+    // Innebandy struktur
+    if (Array.isArray(data)) {
+        data.forEach(block => {
+            (block.Matches || []).forEach(m => {
+                state.innebandy.push({
+                    sport: "innebandy", 
+                    serie: block.Name, 
+                    date: m.MatchDateTime.slice(0,10), 
+                    time: m.MatchDateTime.slice(11,16), 
+                    hall: m.Venue, 
+                    home: m.HomeTeam, 
+                    away: m.AwayTeam,
+                    referees: [ { name: m.Referee1, role: "D1" }, { name: m.Referee2, role: "D2" } ]
+                });
+            });
+        });
+    }
 }
 
 // =====================================================================
@@ -778,7 +804,7 @@ function renderResults() {
     }
 }
 
-// ---- VIEW: MEST AKTIVA DOMARE (ENKEL: SPORT-KATEGORIER) ----
+// ---- VIEW: MEST AKTIVA DOMARE (RESPONSIV: BALANSERAD STORLEK) ----
 function renderToplist(area, matches) {
     let counter = {};
     
@@ -801,7 +827,6 @@ function renderToplist(area, matches) {
                 
                 // Kategorisera
                 if (m.sport === 'fotboll') {
-                    // Check if Futsal based on role
                     if (['1D', '2D', '3D', 'D1', 'D2'].includes(role)) {
                         counter[r.name].futsal++;
                     } else {
@@ -814,67 +839,68 @@ function renderToplist(area, matches) {
         });
     });
     
-    // 2. Sortera ALLA domare först
+    // 2. Sortera
     let allReferees = Object.entries(counter)
         .sort((a,b) => b[1].total - a[1].total);
 
-    // Spara totala antalet för visning
     const totalCount = allReferees.length;
-
-    // 3. Ta ut topp 50 för rendering
     const top50 = allReferees.slice(0, 50);
 
-    // 4. Kolla vilka sporter som har data (för att dölja tomma kolumner)
+    // 3. Kolla vilka sporter som ska visas
     const showFotboll = top50.some(([_, d]) => d.fotboll > 0);
     const showFutsal = top50.some(([_, d]) => d.futsal > 0);
     const showInnebandy = top50.some(([_, d]) => d.innebandy > 0);
 
-    // 5. Grid Layout
-    let gridTemplate = `minmax(100px, 2fr) 45px`;
+    // 4. Grid Layout - Balanserad för mobil/desktop
+    // 110px min bredd för namn räcker för mobil, expanderar på desktop. 
+    // 50px för Totalt är kompakt och snyggt.
+    let gridTemplate = `minmax(110px, 3fr) 50px`; 
     if (showFotboll) gridTemplate += ` 1fr`;
     if (showFutsal) gridTemplate += ` 1fr`;
     if (showInnebandy) gridTemplate += ` 1fr`;
 
     const gridStyle = `grid-template-columns: ${gridTemplate};`;
-    const val = (num, color) => num > 0 ? `<span class="font-bold ${color}">${num}</span>` : `<span class="text-zinc-800">-</span>`;
+    
+    // Helper för siffror (Responsive textstorlek)
+    const val = (num, color) => num > 0 ? `<span class="font-bold ${color}">${num}</span>` : `<span class="text-zinc-700 text-[10px]">-</span>`;
 
     let html = `
     <div class="glass-card rounded-2xl p-4 md:p-6 animate-fade-in">
-        <div class="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
-            <span class="text-xs font-bold bg-white/10 px-2 py-1 rounded-full text-zinc-400 tabular-nums">${totalCount} domare</span>
-            <h2 class="text-lg font-display font-black text-white">Antal matcher</h2>
+        <div class="flex items-center justify-between mb-5 border-b border-white/10 pb-3">
+            <span class="text-xs font-bold bg-white/10 px-2.5 py-1 rounded-full text-zinc-300 tabular-nums">${totalCount} domare</span>
+            <h2 class="text-lg sm:text-xl font-display font-black text-white">Antal matcher</h2>
         </div>
         
-        <div class="grid gap-1 text-[8px] uppercase tracking-wider text-zinc-500 pb-2 px-2 border-b border-white/5 mb-1 items-end font-bold" style="${gridStyle}">
+        <div class="grid gap-2 text-[10px] sm:text-xs uppercase tracking-wider text-zinc-500 pb-2 px-2 border-b border-white/5 mb-2 items-end font-bold" style="${gridStyle}">
             <div class="text-left">Namn</div>
             <div class="text-center text-white">Totalt</div>
             
-            ${showFotboll ? `<div class="text-center text-emerald-500/80">Fotboll</div>` : ''}
-            ${showFutsal ? `<div class="text-center text-yellow-500/80">Futsal</div>` : ''}
-            ${showInnebandy ? `<div class="text-center text-blue-500/80">Innebandy</div>` : ''}
+            ${showFotboll ? `<div class="text-center text-emerald-500/90">Fotboll</div>` : ''}
+            ${showFutsal ? `<div class="text-center text-yellow-500/90">Futsal</div>` : ''}
+            ${showInnebandy ? `<div class="text-center text-blue-500/90">Innebandy</div>` : ''}
         </div>
 
-        <div class="flex flex-col gap-1">
+        <div class="flex flex-col gap-1 sm:gap-1.5">
             ${top50.map(([name, d], i) => {
-                return `<div class="grid gap-1 items-center p-2 rounded bg-dark-surface/30 hover:bg-white/5 border border-transparent hover:border-white/5 transition group text-[10px]" style="${gridStyle}">
+                return `<div class="grid gap-2 items-center p-2 sm:p-3 rounded-lg bg-dark-surface/40 hover:bg-white/5 border border-transparent hover:border-white/10 transition group" style="${gridStyle}">
                     
-                    <div class="flex items-center gap-2 overflow-hidden">
-                        <span class="text-zinc-600 font-mono text-[9px] w-3 text-right flex-shrink-0">${i+1}.</span>
-                        <span onclick="goToReferee('${name}')" class="interactive-text font-bold text-zinc-300 group-hover:text-white truncate" title="${name}">${name}</span>
+                    <div class="flex items-center gap-2 sm:gap-3 overflow-hidden">
+                        <span class="text-zinc-500 font-mono text-[10px] sm:text-xs w-4 sm:w-5 text-right flex-shrink-0">${i+1}.</span>
+                        <span onclick="goToReferee('${name}')" class="interactive-text font-bold text-zinc-200 group-hover:text-white truncate text-xs sm:text-sm" title="${name}">${name}</span>
                     </div>
 
                     <div class="text-center">
-                        <span class="bg-white/10 text-white px-1.5 py-0.5 rounded font-bold text-[9px]">${d.total}</span>
+                        <span class="bg-zinc-800 text-white px-2 py-0.5 sm:py-1 rounded-md font-black text-[10px] sm:text-xs shadow-lg border border-white/5">${d.total}</span>
                     </div>
 
-                    ${showFotboll ? `<div class="text-center">${val(d.fotboll, 'text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded')}</div>` : ''}
-                    ${showFutsal ? `<div class="text-center">${val(d.futsal, 'text-yellow-400 bg-yellow-500/10 px-1.5 py-0.5 rounded')}</div>` : ''}
-                    ${showInnebandy ? `<div class="text-center">${val(d.innebandy, 'text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded')}</div>` : ''}
+                    ${showFotboll ? `<div class="text-center">${val(d.fotboll, 'text-emerald-400 bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs')}</div>` : ''}
+                    ${showFutsal ? `<div class="text-center">${val(d.futsal, 'text-yellow-400 bg-yellow-500/10 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs')}</div>` : ''}
+                    ${showInnebandy ? `<div class="text-center">${val(d.innebandy, 'text-blue-400 bg-blue-500/10 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs')}</div>` : ''}
 
                 </div>`;
             }).join('')}
         </div>
-        ${totalCount > 50 ? '<p class="text-center text-xs text-zinc-600 mt-4">Visar topp 50</p>' : ''}
+        ${totalCount > 50 ? '<p class="text-center text-xs text-zinc-600 mt-5 font-medium">Visar topp 50</p>' : ''}
     </div>`;
     
     area.innerHTML = html;

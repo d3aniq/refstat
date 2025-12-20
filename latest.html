@@ -428,6 +428,7 @@ function validateForm() {
 // DATA LOADING
 // =====================================================================
 async function loadData() {
+    // ... (Din kod för att hämta element och sätta loading-state är densamma) ...
     const from = document.getElementById("dateFrom").value;
     const to = document.getElementById("dateTo").value;
     const btn = document.getElementById("btnLoad");
@@ -435,6 +436,7 @@ async function loadData() {
     const lb = document.getElementById("loadingBar");
     const lp = document.getElementById("loadingPercent");
 
+    // UI Feedback
     btn.innerHTML = `<svg class="animate-spin h-4 w-4 inline mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>HÄMTAR...`;
     btn.disabled = true;
     lc.classList.remove("hidden");
@@ -447,6 +449,7 @@ async function loadData() {
     state.selectedReferees = [];
 
     try {
+        // Skapa datumlista
         let start = new Date(from);
         let end = new Date(to);
         const days = [];
@@ -456,15 +459,40 @@ async function loadData() {
 
         const fotFedId = document.getElementById("selectFotboll").value;
         const innFedId = document.getElementById("selectInnebandy").value;
+        const activeFot = state.active.fotboll;
+        const activeInn = state.active.innebandy;
 
         const BATCH_SIZE = 5; 
+        
         for (let i = 0; i < days.length; i += BATCH_SIZE) {
             const batch = days.slice(i, i + BATCH_SIZE);
-            const promises = [];
-            batch.forEach(date => {
-                if (state.active.fotboll) promises.push(fetchFotboll(date, fotFedId).then(res => state.fotboll.push(...res)));
-                if (state.active.innebandy) promises.push(fetchInnebandy(date, innFedId).then(res => state.innebandy.push(...res)));
+            
+            // HÄR ÄR DEN NYA MAGIN:
+            const promises = batch.map(date => {
+                
+                // 1. Båda sporter valda -> Kör "all"
+                if (activeFot && activeInn) {
+                    const url = `https://refstat-test.jasmin-e21.workers.dev/?sport=all&date=${date}&fed_fotboll=${fotFedId}&fed_innebandy=${innFedId}`;
+                    return fetch(url).then(r => r.json()).then(data => {
+                        // Workern returnerar objektet { fotboll: ..., innebandy: ... }
+                        if(data.fotboll) processFotbollData(data.fotboll);
+                        if(data.innebandy) processInnebandyData(data.innebandy);
+                    });
+                }
+                
+                // 2. Bara Fotboll
+                else if (activeFot) {
+                    const url = `https://refstat-test.jasmin-e21.workers.dev/?sport=fotboll&date=${date}&fed=${fotFedId}`;
+                    return fetch(url).then(r => r.json()).then(data => processFotbollData(data));
+                }
+                
+                // 3. Bara Innebandy
+                else if (activeInn) {
+                    const url = `https://refstat-test.jasmin-e21.workers.dev/?sport=innebandy&date=${date}&fed=${innFedId}`;
+                    return fetch(url).then(r => r.json()).then(data => processInnebandyData(data));
+                }
             });
+
             await Promise.all(promises);
             
             const progress = Math.min(100, Math.round(((i + BATCH_SIZE) / days.length) * 100));
@@ -477,60 +505,58 @@ async function loadData() {
         
         renderFilterList('Serier');
         renderFilterList('Domare');
-        
         setMode("Topplista");
 
     } catch (error) {
-        alert("Ett fel inträffade vid hämtning av data.");
+        console.error(error);
+        alert("Ett fel inträffade. Kontrollera konsolen.");
     } finally {
         btn.innerHTML = "STATISTIK LADDAD";
         setTimeout(() => { lc.classList.add("hidden"); btn.disabled = false; btn.innerText = "UPPDATERA"; }, 500);
     }
 }
 
-async function fetchFotboll(date, fed) {
-  const url = `https://www.gbgfotboll.se/api/matches-today/games/?showReferees=true&associationId=${fed}&date=${date}`;
-  try {
-    const res = await fetch("https://corsproxy.io/?" + encodeURIComponent(url));
-    if(!res.ok) return [];
-    const data = await res.json();
-    let out = [];
-    (data.competitions || []).forEach(comp => {
-      (comp.games || []).forEach(g => {
-        out.push({
-          sport: "fotboll", serie: comp.name, date: g.date.slice(0,10), time: g.date.slice(11,16), hall: g.location, home: g.homeTeam?.name, away: g.awayTeam?.name,
-          referees: (g.referees || []).map(r => ({ name: r.name, role: getShortRole(r.roleDescription) }))
-        });
-      });
-    });
-    return out;
-  } catch(e) { return []; }
-}
-
-async function fetchInnebandy(date, fed) {
-  const url = `https://refstat-test.jasmin-e21.workers.dev/?date=${date}&fed=${fed}`;
-  try {
-    const res = await fetch(url);
-    if(!res.ok) return [];
-    const data = await res.json();
-    let out = [];
-    if(Array.isArray(data)) {
-        data.forEach(block => {
-          if(block.Matches) {
-              block.Matches.forEach(m => {
-                out.push({
-                  sport: "innebandy", serie: block.Name, date: m.MatchDateTime.slice(0,10), time: m.MatchDateTime.slice(11,16), hall: m.Venue, home: m.HomeTeam, away: m.AwayTeam,
-                  referees: [
-                      { name: m.Referee1, role: "D1" }, 
-                      { name: m.Referee2, role: "D2" }
-                  ]
+// Hjälpfunktioner för att hantera/pusha datan (så vi slipper duplicera kod)
+function processFotbollData(data) {
+    if (!data || data.error) return;
+    // Svensk fotboll struktur
+    if (data.competitions && Array.isArray(data.competitions)) {
+        data.competitions.forEach(comp => {
+            (comp.games || []).forEach(g => {
+                state.fotboll.push({
+                    sport: "fotboll", 
+                    serie: comp.name, 
+                    date: g.date.slice(0,10), 
+                    time: g.date.slice(11,16), 
+                    hall: g.location, 
+                    home: g.homeTeam?.name, 
+                    away: g.awayTeam?.name,
+                    referees: (g.referees || []).map(r => ({ name: r.name, role: getShortRole(r.roleDescription) }))
                 });
-              });
-          }
+            });
         });
     }
-    return out;
-  } catch(e) { return []; }
+}
+
+function processInnebandyData(data) {
+    if (!data || data.error) return;
+    // Innebandy struktur
+    if (Array.isArray(data)) {
+        data.forEach(block => {
+            (block.Matches || []).forEach(m => {
+                state.innebandy.push({
+                    sport: "innebandy", 
+                    serie: block.Name, 
+                    date: m.MatchDateTime.slice(0,10), 
+                    time: m.MatchDateTime.slice(11,16), 
+                    hall: m.Venue, 
+                    home: m.HomeTeam, 
+                    away: m.AwayTeam,
+                    referees: [ { name: m.Referee1, role: "D1" }, { name: m.Referee2, role: "D2" } ]
+                });
+            });
+        });
+    }
 }
 
 // =====================================================================
